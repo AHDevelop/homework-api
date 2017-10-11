@@ -1,0 +1,22 @@
+{
+  "require" : {
+    "silex/silex": "^2.0.4",
+    "monolog/monolog": "^1.22",
+    "twig/twig": "^2.0",
+    "symfony/twig-bridge": "^3",
+    "csanquer/pdo-service-provider": "~1.1dev",
+    "doctrine/dbal": "~2.5",
+		"nesbot/Carbon": "~1.21",
+		"euskadi31/cors-service-provider": "~1.0"
+  },
+  "require-dev": {
+    "heroku/heroku-buildpack-php": "*",
+    "phpunit/phpunit": "~4.1.4",
+    "mockery/mockery": "~0.9.1"
+  },
+	"autoload": {
+		"psr-0": {
+			"App": "src/"
+		}
+	}
+}
