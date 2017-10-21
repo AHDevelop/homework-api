@@ -49,7 +49,7 @@ $app->register(new HttpCacheServiceProvider(), array("http_cache.cache_dir" => R
 
 $app->register(new MonologServiceProvider(), array(
     "monolog.logfile" => ROOT_PATH . "/storage/logs/" . Carbon::now('Europe/London')->format("Y-m-d") . ".log",
-    "monolog.level" => $app["log.level"],
+    "monolog.level" => "debug",//$app["log.level"],
     "monolog.name" => "application"
 ));
 

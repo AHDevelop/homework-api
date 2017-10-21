@@ -10,8 +10,8 @@ class UsersService extends BaseService
     */
     public function getOne($id)
     {
-      $st = $this->pdo->prepare('SELECT user_id, email, user_name, auth_type, auth_id FROM user_master where user_id = ?');
-      $st->bindValue(1, $id, $this->pdo::PARAM_INT);
+      $st = $this->pdo->prepare('SELECT user_id, email, user_name, auth_type, auth_id FROM user_master where user_id = :userId');
+      $st->bindValue(':userId', $id, $this->pdo::PARAM_INT);
       $st->execute();
 
       $names = array();

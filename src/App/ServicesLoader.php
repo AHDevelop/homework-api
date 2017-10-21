@@ -19,8 +19,14 @@ class ServicesLoader
             return new Services\NotesService($this->app["db"]);
         };
 
+        // ユーザマスタ
         $this->app['users.service'] = function() {
             return new Services\UsersService($this->app["pdo"]);
+        };
+
+        // 部屋家事
+        $this->app['roomHomework.service'] = function() {
+            return new Services\RoomHomeworkService($this->app["pdo"], $this->app["monolog"]);
         };
 
     }

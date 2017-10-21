@@ -12,7 +12,6 @@ class RoutesLoader
     {
         $this->app = $app;
         $this->instantiateControllers();
-
     }
 
     private function instantiateControllers()
@@ -25,6 +24,9 @@ class RoutesLoader
             return new Controllers\UsersController($this->app['users.service']);
         };
 
+        $this->app['roomHomework.controller'] = function() {
+            return new Controllers\RoomHomeworkController($this->app['roomHomework.service']);
+        };
     }
 
     public function bindRoutesToControllers()
@@ -39,6 +41,18 @@ class RoutesLoader
 
         $api->get('/users', "users.controller:getAll");
         $api->get('/users/{id}', "users.controller:getOne");
+
+        /*
+        * 部屋別家事
+        */
+        // 家事一覧取得
+        $api->get('/homework/{room_id}', "roomHomework.controller:getAll");
+        // 部屋別家事登録
+        $api->post('/room/homework/update.json', "roomHomework.controller:insert");
+        // 部屋別家事更新
+        $api->put('/room/homework/update.json', "roomHomework.controller:update");
+        // 部屋別家事削除
+        $api->delete('/room/homework/update.json', "roomHomework.controller:delete");
 
         $this->app->mount($this->app["api.endpoint"].'/'.$this->app["api.version"], $api);
     }
