@@ -46,7 +46,7 @@ class RoutesLoader
         * 部屋別家事
         */
         // 家事一覧取得
-        $api->get('/homework/{room_id}', "roomHomework.controller:getAll");
+        $api->get('/homework/{roomId}', "roomHomework.controller:getAll");
         // 部屋別家事登録
         $api->post('/room/homework/update.json', "roomHomework.controller:insert");
         // 部屋別家事更新
