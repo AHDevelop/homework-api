@@ -44,7 +44,11 @@ class RoutesLoader
         */
         $api->get('/users', "users.controller:getAll");
         $api->get('/users/user_id={id}', "users.controller:getOne");
+        // 部屋ユーザー一覧取得
         $api->get('/users/room_id={roomId}', "users.controller:getAllWithRoom");
+        // 新規ユーザー登録
+        $api->post('/users/update.json', "users.controller:insertUser");
+
 
         /*
         * 部屋別家事

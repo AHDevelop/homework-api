@@ -34,10 +34,18 @@ class UsersController
         return new JsonResponse($this->usersService->getAllWithRoom($roomId));
     }
 
-    public function getDataFromRequest(Request $request)
+    /*
+    * 部屋ユーザー一覧取得
+    */
+    public function insertUser(Request $request)
     {
-        return $users = array(
-            "user_name" => $request->request->get("user_name")
-        );
+        return new JsonResponse($this->usersService->insertUser($request));
     }
+
+    // public function getDataFromRequest(Request $request)
+    // {
+    //     return $users = array(
+    //         "user_name" => $request->request->get("user_name")
+    //     );
+    // }
 }
