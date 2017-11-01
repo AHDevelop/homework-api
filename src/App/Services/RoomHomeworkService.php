@@ -35,7 +35,52 @@ class RoomHomeworkService extends BaseService
 
         return $results;
     }
+    /**
+    * 部屋に紐づく家事を、今日の時間を含めて返す
+    */
+    public function getHomeworkWithTodayTime($roomId)
+    {
+        $st = $this->pdo->prepare('
+          SELECT
+            rhw.room_home_work_id,
+            rhw.room_id,
+            rhw.home_work_name,
+            rhw.is_visible,
+            hwh.home_work_time_hh
+          FROM
+            room_home_work rhw
+            left join
+              (
+                select
+                  room_home_work_id,
+                  sum(home_work_time_hh) home_work_time_hh
+                from
+                  home_work_hist
+                where
+                  room_id = :roomId
+                  and home_work_date = current_date
+                group by
+                  room_home_work_id
+              ) hwh on rhw.room_home_work_id = hwh.room_home_work_id
+          WHERE
+            rhw.room_id = :roomId AND rhw.is_deleted = false
+          ORDER BY
+            rhw.room_home_work_id
+            );
+        ');
+        $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+        $st->execute();
 
+        // SQLエラーをログに出力
+        $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+
+        $results = array();
+        while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+          $results[] = $row;
+        }
+
+        return $results;
+    }
     /*
     *　家事を登録する
     */
@@ -89,9 +134,9 @@ class RoomHomeworkService extends BaseService
       $st = $this->pdo->prepare('
         UPDATE
           room_home_work
-	      SET
+        SET
           home_work_name = :homeworkName, bese_home_work_time_hh = :beseHomeworkTimeHH, is_visible = :isVisible, created_by = :updateUserId, created_at = now(), updated_by = :updateUserId, updated_at = now()
-	      WHERE
+        WHERE
           room_home_work_id = :roomHomeworkId;
         ');
 

@@ -13,7 +13,7 @@ use App\RoutesLoader;
 use Carbon\Carbon;
 use Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider;
 
-date_default_timezone_set('Asia/Ho_Chi_Minh');
+date_default_timezone_set('Asia/Tokyo');
 
 //accepting JSON
 $app->before(function (Request $request) {
