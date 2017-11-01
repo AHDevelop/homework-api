@@ -26,6 +26,14 @@ class UsersController
         return new JsonResponse($this->usersService->getAll());
     }
 
+    /*
+    * 部屋ユーザー一覧取得
+    */
+    public function getAllWithRoom($roomId)
+    {
+        return new JsonResponse($this->usersService->getAllWithRoom($roomId));
+    }
+
     public function getDataFromRequest(Request $request)
     {
         return $users = array(

@@ -38,4 +38,39 @@ class UsersService extends BaseService
         return $names;
     }
 
+    /*
+    * 部屋ユーザー一覧取得
+    */
+    public function getAllWithRoom($roomId){
+
+      $st = $this->pdo->prepare('
+      SELECT
+        user_master.*
+      FROM
+        room
+        LEFT JOIN room_user
+        ON room.room_id = room_user.room_id
+        LEFT JOIN user_master
+        ON room_user.user_id = user_master.user_id
+      WHERE
+        room.room_id = :roomId AND user_master.is_deleted = false
+      ORDER BY
+        user_id
+      ;'
+      );
+
+      $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+      $st->execute();
+
+      // SQLエラーをログに出力
+      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+
+      $results = array();
+      while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+        $results[] = $row;
+      }
+
+      return $results;
+    }
+
 }

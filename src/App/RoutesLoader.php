@@ -39,8 +39,12 @@ class RoutesLoader
         $api->put('/notes/{id}', "notes.controller:update");
         $api->delete('/notes/{id}', "notes.controller:delete");
 
+        /*
+        * ユーザー
+        */
         $api->get('/users', "users.controller:getAll");
-        $api->get('/users/{id}', "users.controller:getOne");
+        $api->get('/users/user_id={id}', "users.controller:getOne");
+        $api->get('/users/room_id={roomId}', "users.controller:getAllWithRoom");
 
         /*
         * 部屋別家事

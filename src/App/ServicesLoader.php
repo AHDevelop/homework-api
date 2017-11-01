@@ -16,12 +16,12 @@ class ServicesLoader
     public function bindServicesIntoContainer()
     {
         $this->app['notes.service'] = function() {
-            return new Services\NotesService($this->app["db"]);
+            return new Services\NotesService($this->app["db"], $this->app["monolog"]);
         };
 
         // ユーザマスタ
         $this->app['users.service'] = function() {
-            return new Services\UsersService($this->app["pdo"]);
+            return new Services\UsersService($this->app["pdo"], $this->app["monolog"]);
         };
 
         // 部屋家事
