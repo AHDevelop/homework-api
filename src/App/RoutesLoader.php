@@ -24,6 +24,10 @@ class RoutesLoader
             return new Controllers\UsersController($this->app['users.service']);
         };
 
+        $this->app['room.controller'] = function() {
+            return new Controllers\RoomController($this->app['room.service']);
+        };
+
         $this->app['roomHomework.controller'] = function() {
             return new Controllers\RoomHomeworkController($this->app['roomHomework.service']);
         };
@@ -42,12 +46,19 @@ class RoutesLoader
         /*
         * ユーザー
         */
+        // 全ユーザー取得
         $api->get('/users', "users.controller:getAll");
+        // IDでユーザーを取得
         $api->get('/users/user_id={id}', "users.controller:getOne");
-        // 部屋ユーザー一覧取得
-        $api->get('/users/room_id={roomId}', "users.controller:getAllWithRoom");
         // 新規ユーザー登録
         $api->post('/users/update.json', "users.controller:insertUser");
+
+        // 部屋ユーザー一覧取得
+        $api->get('/users/room_id={roomId}', "users.controller:getAllWithRoom");
+        // 部屋ユーザー追加
+        $api->post('/room/users/update.json', "users.controller:insertUserWithRoom");
+        // 部屋ユーザー削除
+        $api->delete('/room/users/update.json', "users.controller:deleteUserWithRoom");
 
 
         /*

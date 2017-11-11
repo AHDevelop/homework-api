@@ -42,10 +42,20 @@ class UsersController
         return new JsonResponse($this->usersService->insertUser($request));
     }
 
-    // public function getDataFromRequest(Request $request)
-    // {
-    //     return $users = array(
-    //         "user_name" => $request->request->get("user_name")
-    //     );
-    // }
+    /*
+    * 部屋ユーザー追加
+    */
+    public function insertUserWithRoom(Request $request)
+    {
+        return new JsonResponse($this->usersService->insertUserWithRoom($request));
+    }
+
+    /*
+    * 部屋ユーザー削除
+    */
+    public function deleteUserWithRoom(Request $request)
+    {
+        return new JsonResponse($this->usersService->deleteUserWithRoom($request));
+    }
+
 }

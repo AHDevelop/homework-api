@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+require('RoomService.php');
 
 class UsersService extends BaseService
 {
@@ -106,11 +107,205 @@ class UsersService extends BaseService
       // SQLの実行結果を出力
       $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
 
+      $userId = $this->pdo->lastInsertId();
+
       // 部屋の新規作成
 
+      // SQLステートメントを用意
+      $st2 = $this->pdo->prepare('
+        INSERT INTO room
+          (room_name, user_id, room_access_key, is_deleted, created_by, created_at, updated_by, updated_at)
+        VALUES
+          (:roomName, :userId, :roomAccessKey, false, :updateUserId, now(), :updateUserId, now());
+      ');
+
+      // 変数をバインド
+      $st2->bindParam(':roomName', $roomName, $this->pdo::PARAM_STR);
+      $st2->bindParam(':userId', $userId, $this->pdo::PARAM_INT);
+      $st2->bindParam(':roomAccessKey', $roomAccessKey, $this->pdo::PARAM_STR);
+      $st2->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
+
+      // 変数に実数を設定
+      $roomName = "NEW ROOM";
+      $roomAccessKey = "hogehogehoge"; // TODO make SHA512 hash values
+      $updateUserId = "system";
+
+      $st2->execute();
+
+      // SQLの実行結果を出力
+      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st2->errorInfo());
+      $roomId = $this->pdo->lastInsertId();
+
+      // 家事マスタをすべて取得
+      $homeworkMasterList = $this->getAllHomeworkMaster();
+
+      $homeworkMasterList[0]["room_access_key"];
+
       // 部屋家事の登録
+      // SQLステートメントを用意
+      $st3 = $this->pdo->prepare('
+        INSERT INTO room_home_work
+          (room_id, home_work_name, bese_home_work_time_hh, is_visible, is_deleted, created_by, created_at, updated_by, updated_at)
+        VALUES
+          (:roomId, :homeWorkName, :beseHomeworkTimeHH, true, false, :updateUserId, now(), :updateUserId, now());
+      ');
+
+      // 変数をバインド
+      $st3->bindParam(':roomId', $roomId, $this->pdo::PARAM_STR);
+      $st3->bindParam(':homeWorkName', $homeWorkName, $this->pdo::PARAM_INT);
+      $st3->bindParam(':beseHomeworkTimeHH', $beseHomeworkTimeHH, $this->pdo::PARAM_STR);
+      $st3->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
+
+      // 変数に実数を設定
+      $updateUserId = "system";
+
+      foreach ($homeworkMasterList as $key => $homeworkMaster) {
+        $homeWorkName = $homeworkMaster["home_work_name"];
+        $beseHomeworkTimeHH = $homeworkMaster["base_home_work_time_hh"];
+        $st3->execute();
+        $this->monolog->debug(sprintf("SQL log is '%s'  "), $st3->errorInfo());
+      }
 
       return $this->pdo->lastInsertId();
+    }
+
+    /*
+    * 家事マスタを全件取得する
+    */
+    private function getAllHomeworkMaster(){
+
+      $st = $this->pdo->prepare('
+        SELECT
+          home_work_id, home_work_name, base_home_work_time_hh
+        FROM
+          home_work_master
+        WHERE
+          is_deleted = false;
+      ');
+
+      $st->execute();
+
+      // SQLエラーをログに出力
+      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+
+      $results = array();
+      while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+        $results[] = $row;
+      }
+
+      return $results;
+    }
+
+    /*
+    * ユーザー追加
+    */
+    public function insertUserWithRoom($Param)
+    {
+
+      // room_access_key からRoomIdを取得する
+      $roomAccessKey = $Param->request->get("room_access_key");
+
+      // $roomAccessKeyを_で分割
+      $roomAccessKeySplite = explode('_', $roomAccessKey);
+      $roomId = $roomAccessKeySplite[0];
+      $accessKey = $roomAccessKeySplite[1];
+
+      // 部屋とアクセスキーを取得
+      $roomInfo = $this->getOneRoom($roomId);
+
+      // マッチングチェック
+      $trueRoomAccessKey = $roomInfo[0]["room_access_key"];
+
+      if($trueRoomAccessKey != $accessKey){
+        return "認証エラー";
+      }
+
+      // TODO 重複チェック
+
+      // SQLステートメントを用意
+      $st = $this->pdo->prepare('
+        INSERT INTO room_user
+          (room_id, user_id, is_deleted, created_by, created_at, updated_by, updated_at)
+        VALUES
+          (:roomId, :userId, false, :updateUserId, now(), :updateUserId, now());
+      ');
+
+      // 変数をバインド
+      $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+      $st->bindParam(':userId', $userId, $this->pdo::PARAM_INT);
+      $st->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
+
+      // 変数に実数を設定
+      $userId = $Param->request->get("user_id");
+      $updateUserId = "system";
+
+      $st->execute();
+      // SQLの実行結果を出力
+      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+
+      return $this->pdo->lastInsertId();
+    }
+
+    /**
+    * 部屋を取得する
+    */
+    private function getOneRoom($roomId)
+    {
+        $st = $this->pdo->prepare('
+            SELECT
+              room_id, room_name, user_id, room_access_key
+            FROM
+              room
+            WHERE
+              room_id = :roomId AND is_deleted = false
+            ;'
+        );
+
+        $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+        $st->execute();
+
+        // SQLエラーをログに出力
+        $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+
+        $results = array();
+        while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+          $results[] = $row;
+        }
+
+        return $results;
+    }
+
+    /*
+    * 部屋ユーザー削除
+    */
+    public function deleteUserWithRoom($Param)
+    {
+        // TODO ユーザーの存在チェック
+
+        // SQLステートメントを用意
+        $st = $this->pdo->prepare('
+          UPDATE room_user
+            SET is_deleted = true, updated_by = :updateUserId, updated_at = now()
+          WHERE
+            room_id = :roomId and user_id = :removeUserId;
+        ');
+
+        // 変数をバインド
+        $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+        $st->bindParam(':removeUserId', $removeUserId, $this->pdo::PARAM_INT);
+        $st->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
+
+        // 変数に実数を設定
+        $removeUserId = $Param->request->get("remove_user_id");
+        $roomId = $Param->request->get("room_id");
+        $updateUserId = "system";
+
+        $st->execute();
+
+        // SQLの実行結果を出力
+        $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+
+        return $this->pdo->lastInsertId();
     }
 
 }
