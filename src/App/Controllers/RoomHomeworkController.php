@@ -23,13 +23,13 @@ class RoomHomeworkController
     {
         return new JsonResponse($this->roomHomeworkService->getAll($roomId));
     }
-    /*
-    * 家事一覧&家事別時間取得
-    */
-    public function getHomeworkWithTodayTime($roomId)
-    {
-        return new JsonResponse($this->roomHomeworkService->getHomeworkWithTodayTime($roomId));
-    }
+    // /*
+    // * 家事一覧&家事別時間取得
+    // */
+    // public function getHomeworkWithTodayTime($roomId)
+    // {
+    //     return new JsonResponse($this->roomHomeworkService->getHomeworkWithTodayTime($roomId));
+    // }
     /*
     * 部屋別家事登録
     */

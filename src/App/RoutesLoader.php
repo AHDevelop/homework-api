@@ -69,8 +69,9 @@ class RoutesLoader
         */
         // 家事一覧取得
         $api->get('/homework/{roomId}', "roomHomework.controller:getAll");
-        // 家事一覧&家事別時間取得
-        $api->get('/homework/room_id={roomId}', "roomHomework.controller:getHomeworkWithTodayTime");
+        // // 家事一覧&家事別時間取得
+        // $api->get('/homework/room_id={roomId}', "roomHomework.controller:getHomeworkWithTodayTime");
+
         // 部屋別家事登録
         $api->post('/room/homework/update.json', "roomHomework.controller:insert");
         // 部屋別家事更新
