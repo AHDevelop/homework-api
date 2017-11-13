@@ -35,8 +35,7 @@ class RoomHomeworkService extends BaseService
         WHERE
           rhw.room_id = :roomId AND rhw.is_deleted = false
         ORDER BY
-          rhw.room_home_work_id
-          );
+          rhw.room_home_work_id;
       ');
 
       $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
