@@ -31,6 +31,10 @@ class RoutesLoader
         $this->app['roomHomework.controller'] = function() {
             return new Controllers\RoomHomeworkController($this->app['roomHomework.service']);
         };
+
+        $this->app['homeworkHist.controller'] = function() {
+            return new Controllers\HomeworkHistController($this->app['homeworkHist.service']);
+        };
     }
 
     public function bindRoutesToControllers()
@@ -60,7 +64,6 @@ class RoutesLoader
         // 部屋ユーザー削除
         $api->delete('/room/users/update.json', "users.controller:deleteUserWithRoom");
 
-
         /*
         * 部屋別家事
         */
@@ -74,6 +77,14 @@ class RoutesLoader
         $api->put('/room/homework/update.json', "roomHomework.controller:update");
         // 部屋別家事削除
         $api->delete('/room/homework/update.json', "roomHomework.controller:delete");
+
+        /*
+        * 家事履歴
+        */
+        // 家事履歴登録
+        $api->post('/homeworkhist/update.json', "homeworkHist.controller:insert");
+        // 家事履歴削除
+        $api->delete('/homeworkhist/update.json', "homeworkHist.controller:delete");
 
         $this->app->mount($this->app["api.endpoint"].'/'.$this->app["api.version"], $api);
     }

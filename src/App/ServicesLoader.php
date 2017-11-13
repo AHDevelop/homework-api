@@ -29,5 +29,10 @@ class ServicesLoader
             return new Services\RoomHomeworkService($this->app["pdo"], $this->app["monolog"]);
         };
 
+        // 家事履歴
+        $this->app['homeworkHist.service'] = function() {
+            return new Services\HomeworkHistService($this->app["pdo"], $this->app["monolog"]);
+        };
+
     }
 }
