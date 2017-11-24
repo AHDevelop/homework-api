@@ -15,6 +15,7 @@ class RoomHomeworkService extends BaseService
           rhw.room_home_work_id,
           rhw.room_id,
           rhw.home_work_name,
+          rhw.base_home_work_time_hh,
           rhw.is_visible,
           hwh.home_work_time_hh
         FROM
