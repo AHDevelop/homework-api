@@ -24,8 +24,8 @@ class RoutesLoader
             return new Controllers\UsersController($this->app['users.service']);
         };
 
-        $this->app['room.controller'] = function() {
-            return new Controllers\RoomController($this->app['room.service']);
+        $this->app['rooms.controller'] = function() {
+            return new Controllers\RoomsController($this->app['rooms.service']);
         };
 
         $this->app['roomHomework.controller'] = function() {
@@ -46,6 +46,12 @@ class RoutesLoader
         $api->post('/notes', "notes.controller:save");
         $api->put('/notes/{id}', "notes.controller:update");
         $api->delete('/notes/{id}', "notes.controller:delete");
+
+        /*
+        * 部屋
+        */
+        // 部屋一覧取得
+        $api->get('/rooms/user_id={userId}', "rooms.controller:getAll");
 
         /*
         * ユーザー

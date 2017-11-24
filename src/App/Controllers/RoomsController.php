@@ -6,21 +6,23 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class RoomController
+class RoomsController
 {
 
-    protected $roomService;
+    protected $roomsService;
 
     public function __construct($service)
     {
-        $this->$roomService = $service;
+        // var_dump($service);
+        $this->$roomsService = $service;
     }
 
     /*
     * 部屋取得
     */
-    public function getOne($roomId)
+    public function getAll($userId)
     {
-        return new JsonResponse($this->roomHomeworkService->getOne($roomId));
+        // var_dump('test');
+        return new JsonResponse($this->roomsService->getAll(1));
     }
 }

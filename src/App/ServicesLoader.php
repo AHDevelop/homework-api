@@ -24,6 +24,11 @@ class ServicesLoader
             return new Services\UsersService($this->app["pdo"], $this->app["monolog"]);
         };
 
+        // 部屋
+        $this->app['rooms.service'] = function() {
+          return new Services\RoomsService($this->app["pdo"], $this->app["monolog"]);
+        };
+
         // 部屋家事
         $this->app['roomHomework.service'] = function() {
             return new Services\RoomHomeworkService($this->app["pdo"], $this->app["monolog"]);
