@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Services;
-require('RoomService.php');
 
 class UsersService extends BaseService
 {
