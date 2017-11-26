@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class HomeworkHistController
+class HomeworkHistController extends BaseController
 {
 
     protected $homeworkHistService;
@@ -21,7 +21,8 @@ class HomeworkHistController
     */
     public function insert(Request $request){
 
-      return new JsonResponse(array("id" => $this->homeworkHistService->insert($request)));
+      $this->homeworkHistService->insert($request, $responce);
+      return $this->returnResult($responce);
     }
 
     /*
@@ -29,7 +30,7 @@ class HomeworkHistController
     */
     public function delete(Request $request){
 
-      return new JsonResponse(array("id" => $this->homeworkHistService->delete($request)));
+      return $this->returnResult(array("id" => $this->homeworkHistService->delete($request)), "", "");
     }
 
 }

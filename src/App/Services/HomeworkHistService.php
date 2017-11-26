@@ -8,7 +8,7 @@ class HomeworkHistService extends BaseService
     /*
     *　家事履歴を登録する
     */
-    public function insert($Param)
+    public function insert($Param, $responce)
     {
         // SQLステートメントを用意
         $st = $this->pdo->prepare('
@@ -43,7 +43,7 @@ class HomeworkHistService extends BaseService
           $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
         }
 
-        return $this->pdo->lastInsertId();
+        return;
     }
 
     /*

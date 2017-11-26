@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class RoomHomeworkController
+class RoomHomeworkController extends BaseController
 {
 
     protected $roomHomeworkService;

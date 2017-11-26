@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class NotesController
+class NotesController extends BaseController
 {
 
     protected $notesService;
