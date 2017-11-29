@@ -58,6 +58,8 @@ class RoutesLoader
         */
         // 全ユーザー取得
         $api->get('/users', "users.controller:getAll");
+        // auth key でユーザー取得
+        $api->get('/users/key={key}', "users.controller:getOneByKey");
         // IDでユーザーを取得
         $api->get('/users/user_id={id}', "users.controller:getOne");
         // 新規ユーザー登録

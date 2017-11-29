@@ -21,6 +21,11 @@ class UsersController extends BaseController
         return new JsonResponse($this->usersService->getOne($id));
     }
 
+    public function getOneByKey($key)
+    {
+        return new JsonResponse($this->usersService->getOneByKey($key));
+    }
+    
     public function getAll()
     {
         return new JsonResponse($this->usersService->getAll());

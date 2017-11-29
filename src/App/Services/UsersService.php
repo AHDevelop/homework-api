@@ -23,6 +23,23 @@ class UsersService extends BaseService
     }
 
     /**
+    * ユーザーを一件取得する（認証キーで取得）
+    */
+    public function getOneByKey($key)
+    {
+      $st = $this->pdo->prepare('SELECT user_id, email, user_name, auth_type, auth_id FROM user_master where auth_id = :authId');
+      $st->bindValue(':authId', $key, $this->pdo::PARAM_INT);
+      $st->execute();
+
+      $names = array();
+      while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+        $names[] = $row;
+      }
+
+      return $names;
+    }
+
+    /**
     * ユーザー全件を取得する
     */
     public function getAll()
