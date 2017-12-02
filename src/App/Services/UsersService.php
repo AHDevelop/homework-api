@@ -142,7 +142,7 @@ class UsersService extends BaseService
       $st2->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
 
       // 変数に実数を設定
-      $roomName = "NEW ROOM";
+      $roomName = "NEW ROOM"; // TODO 編集する画面がアプリにない
       $roomAccessKey = "hogehogehoge"; // TODO make SHA512 hash values
       $updateUserId = "system";
 
@@ -161,7 +161,7 @@ class UsersService extends BaseService
       // SQLステートメントを用意
       $st3 = $this->pdo->prepare('
         INSERT INTO room_home_work
-          (room_id, home_work_name, bese_home_work_time_hh, is_visible, is_deleted, created_by, created_at, updated_by, updated_at)
+          (room_id, home_work_name, base_home_work_time_hh, is_visible, is_deleted, created_by, created_at, updated_by, updated_at)
         VALUES
           (:roomId, :homeWorkName, :beseHomeworkTimeHH, true, false, :updateUserId, now(), :updateUserId, now());
       ');
