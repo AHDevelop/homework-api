@@ -163,13 +163,13 @@ class UsersService extends BaseService
         INSERT INTO room_home_work
           (room_id, home_work_name, base_home_work_time_hh, is_visible, is_deleted, created_by, created_at, updated_by, updated_at)
         VALUES
-          (:roomId, :homeWorkName, :beseHomeworkTimeHH, true, false, :updateUserId, now(), :updateUserId, now());
+          (:roomId, :homeWorkName, :baseHomeworkTimeHH, true, false, :updateUserId, now(), :updateUserId, now());
       ');
 
       // 変数をバインド
       $st3->bindParam(':roomId', $roomId, $this->pdo::PARAM_STR);
       $st3->bindParam(':homeWorkName', $homeWorkName, $this->pdo::PARAM_INT);
-      $st3->bindParam(':beseHomeworkTimeHH', $beseHomeworkTimeHH, $this->pdo::PARAM_STR);
+      $st3->bindParam(':baseHomeworkTimeHH', $baseHomeworkTimeHH, $this->pdo::PARAM_STR);
       $st3->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
 
       // 変数に実数を設定
@@ -177,7 +177,7 @@ class UsersService extends BaseService
 
       foreach ($homeworkMasterList as $key => $homeworkMaster) {
         $homeWorkName = $homeworkMaster["home_work_name"];
-        $beseHomeworkTimeHH = $homeworkMaster["base_home_work_time_hh"];
+        $baseHomeworkTimeHH = $homeworkMaster["base_home_work_time_hh"];
         $st3->execute();
         $this->monolog->debug(sprintf("SQL log is '%s'  "), $st3->errorInfo());
       }

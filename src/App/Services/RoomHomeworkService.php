@@ -104,15 +104,15 @@ class RoomHomeworkService extends BaseService
         // SQLステートメントを用意
         $st = $this->pdo->prepare('
             INSERT INTO room_home_work
-              (room_id, home_work_name, bese_home_work_time_hh, is_visible, is_deleted, created_by, created_at, updated_by, updated_at)
+              (room_id, home_work_name, base_home_work_time_hh, is_visible, is_deleted, created_by, created_at, updated_by, updated_at)
             VALUES
-              (:roomId, :homeWorkName, :beseHomeworkTimeHH, :isVisible, false, :updateUserId, now(), :updateUserId, now());
+              (:roomId, :homeWorkName, :baseHomeworkTimeHH, :isVisible, false, :updateUserId, now(), :updateUserId, now());
           ');
 
         // 変数をバインド
         $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
         $st->bindParam(':homeWorkName', $homeWorkName, $this->pdo::PARAM_STR);
-        $st->bindParam(':beseHomeworkTimeHH', $beseHomeworkTimeHH, $this->pdo::PARAM_INT);
+        $st->bindParam(':baseHomeworkTimeHH', $baseHomeworkTimeHH, $this->pdo::PARAM_INT);
         $st->bindParam(':isVisible', $isVisible, $this->pdo::PARAM_BOOL);
         $st->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
 
@@ -129,7 +129,7 @@ class RoomHomeworkService extends BaseService
         foreach ($rocord as $id => $row) {
 
           $homeWorkName = $row["home_work_name"];
-          $beseHomeworkTimeHH = $row["base_home_work_time"];
+          $baseHomeworkTimeHH = $row["base_home_work_time"];
 
           $st->execute();
           // SQLの実行結果を出力
@@ -150,7 +150,7 @@ class RoomHomeworkService extends BaseService
         UPDATE
           room_home_work
         SET
-          home_work_name = :homeworkName, bese_home_work_time_hh = :beseHomeworkTimeHH, is_visible = :isVisible, created_by = :updateUserId, created_at = now(), updated_by = :updateUserId, updated_at = now()
+          home_work_name = :homeworkName, base_home_work_time_hh = :baseHomeworkTimeHH, is_visible = :isVisible, created_by = :updateUserId, created_at = now(), updated_by = :updateUserId, updated_at = now()
         WHERE
           room_home_work_id = :roomHomeworkId;
         ');
@@ -158,7 +158,7 @@ class RoomHomeworkService extends BaseService
         // 変数をバインド
         $st->bindParam(':roomHomeworkId', $roomHomeworkId, $this->pdo::PARAM_INT);
         $st->bindParam(':homeworkName', $homeworkName, $this->pdo::PARAM_STR);
-        $st->bindParam(':beseHomeworkTimeHH', $beseHomeworkTimeHH, $this->pdo::PARAM_INT);
+        $st->bindParam(':baseHomeworkTimeHH', $baseHomeworkTimeHH, $this->pdo::PARAM_INT);
         $st->bindParam(':isVisible', $isVisible, $this->pdo::PARAM_BOOL);
         $st->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
 
@@ -169,7 +169,7 @@ class RoomHomeworkService extends BaseService
 
           $roomHomeworkId = $row["room_home_work_id"];
           $homeworkName = $row["home_work_name"];
-          $beseHomeworkTimeHH = $row["base_home_work_time"];
+          $baseHomeworkTimeHH = $row["base_home_work_time"];
           $isVisible = $row["is_visible"];
 
           // SQLを実行
