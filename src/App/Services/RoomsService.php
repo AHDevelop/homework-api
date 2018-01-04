@@ -19,10 +19,10 @@ class RoomsService extends BaseService
               FROM
                 room
               WHERE
-                user_id = 1 AND is_deleted = false
-              
+                user_id = :userId AND is_deleted = false
+
               UNION ALL
-    
+
               SELECT
                 room_id, room_name, user_id, room_access_key, 0 as is_owned
               FROM
@@ -34,10 +34,10 @@ class RoomsService extends BaseService
                     FROM
                       room_user ru
                     WHERE
-                      user_id = 1 AND ru.room_id = r.room_id
+                      user_id = :userId AND ru.room_id = r.room_id
                   )
-              AND user_id != 1 AND r.is_deleted = false
-            ) list;  
+              AND user_id != :userId AND r.is_deleted = false
+            ) list;
         ');
 
         $st->bindParam(':userId', $userId, $this->pdo::PARAM_INT);

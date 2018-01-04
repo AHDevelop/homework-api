@@ -51,7 +51,7 @@ class RoutesLoader
         * 部屋
         */
         // 部屋一覧取得
-        $api->get('/rooms/user_id={userId}', "rooms.controller:getAll");
+        $api->get('/rooms/user_id={id}', "rooms.controller:getAll");
 
         /*
         * ユーザー
