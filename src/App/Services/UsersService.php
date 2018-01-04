@@ -182,7 +182,18 @@ class UsersService extends BaseService
         $this->monolog->debug(sprintf("SQL log is '%s'  "), $st3->errorInfo());
       }
 
-      return $this->pdo->lastInsertId();
+      // 登録したユーザ情報を返却するためにSelect
+      $userId = $this->pdo->lastInsertId();
+      $st = $this->pdo->prepare('SELECT user_id, email, user_name, auth_type, auth_id FROM user_master where user_id = :userId');
+      $st->bindValue(':userId', $userId, $this->pdo::PARAM_INT);
+      $st->execute();
+
+      $names = array();
+      while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+        $names[] = $row;
+      }
+
+      return $names;
     }
 
     /*
