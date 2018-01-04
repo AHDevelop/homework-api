@@ -83,4 +83,79 @@ class HomeworkHistService extends BaseService
         return $this->pdo->lastInsertId();
     }
 
+    /**
+    * 部屋に紐づくユーザ毎の家事時間一覧を取得
+    */
+    public function getSummaryUser($roomId)
+    {
+        $sql = '
+          SELECT
+            hwh.user_id,
+            um.user_name,
+            hwh.home_work_time_sum
+          FROM
+          (
+            SELECT
+              hwh.user_id,
+              sum(hwh.home_work_time_hh) as home_work_time_sum
+            FROM
+              home_work_hist hwh
+            WHERE
+              hwh.room_id = :roomId AND hwh.is_deleted = false
+            GROUP BY
+              hwh.user_id
+          ) hwh
+          LEFT JOIN user_master um on hwh.user_id = um.user_id;
+        ';
+
+      $st = $this->pdo->prepare($sql);
+      $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+      $st->execute();
+      // SQLエラーをログに出力
+      $this->monolog->debug($sql);
+      $this->monolog->debug(sprintf("SQL log is '%s'  ", $st->errorInfo()[2]));
+      $results = array();
+      while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+        $results[] = $row;
+      }
+      return $results;
+    }
+
+        /**
+    * 部屋に紐づく家事毎の家事時間一覧を取得
+    */
+    public function getSummaryHomework($roomId)
+    {
+        $sql = '
+          SELECT
+            hwh.room_home_work_id,
+            rhw.home_work_name,
+            hwh.home_work_time_sum
+          FROM
+          (
+            SELECT
+              hwh.room_home_work_id,
+              sum(hwh.home_work_time_hh) as home_work_time_sum
+            FROM
+              home_work_hist hwh
+            WHERE
+              hwh.room_id = :roomId AND hwh.is_deleted = false
+            GROUP BY
+              hwh.room_home_work_id
+          ) hwh
+          LEFT JOIN room_home_work rhw on hwh.room_home_work_id = rhw.room_home_work_id;
+        ';
+
+      $st = $this->pdo->prepare($sql);
+      $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+      $st->execute();
+      // SQLエラーをログに出力
+      $this->monolog->debug($sql);
+      $this->monolog->debug(sprintf("SQL log is '%s'  ", $st->errorInfo()[2]));
+      $results = array();
+      while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+        $results[] = $row;
+      }
+      return $results;
+    }
 }
