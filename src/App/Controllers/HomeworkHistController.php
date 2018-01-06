@@ -17,7 +17,15 @@ class HomeworkHistController extends BaseController
     }
 
     /*
-    * 部屋別家事登録
+    * 家事履歴一覧取得
+    */
+    public function getAll($roomId)
+    {
+        return new JsonResponse($this->homeworkHistService->getAll($roomId));
+    }
+
+    /*
+    * 家事履歴登録登録
     */
     public function insert(Request $request){
 
@@ -26,7 +34,15 @@ class HomeworkHistController extends BaseController
     }
 
     /*
-    * 部屋別家事削除
+    * 部屋別家事更新
+    */
+    public function update(Request $request){
+
+      return new JsonResponse(array("id" => $this->homeworkHistService->update($request)));
+    }
+
+    /*
+    * 家事履歴削除
     */
     public function delete(Request $request){
 

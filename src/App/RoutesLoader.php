@@ -41,11 +41,11 @@ class RoutesLoader
     {
         $api = $this->app["controllers_factory"];
 
-        $api->get('/notes', "notes.controller:getAll");
-        $api->get('/notes/{id}', "notes.controller:getOne");
-        $api->post('/notes', "notes.controller:save");
-        $api->put('/notes/{id}', "notes.controller:update");
-        $api->delete('/notes/{id}', "notes.controller:delete");
+        // $api->get('/notes', "notes.controller:getAll");
+        // $api->get('/notes/{id}', "notes.controller:getOne");
+        // $api->post('/notes', "notes.controller:save");
+        // $api->put('/notes/{id}', "notes.controller:update");
+        // $api->delete('/notes/{id}', "notes.controller:delete");
 
         /*
         * 部屋
@@ -90,8 +90,12 @@ class RoutesLoader
         /*
         * 家事履歴
         */
+        // 家事履歴一覧取得
+        $api->get('/homeworkhist/room_id={roomId}', "homeworkHist.controller:getAll");
         // 家事履歴登録
         $api->post('/homeworkhist/update.json', "homeworkHist.controller:insert");
+        // 家事履歴更新
+        $api->put('/homeworkhist/update.json', "homeworkHist.controller:update");
         // 家事履歴削除
         $api->delete('/homeworkhist/update.json', "homeworkHist.controller:delete");
 
