@@ -49,4 +49,20 @@ class HomeworkHistController extends BaseController
       return $this->returnResult(array("id" => $this->homeworkHistService->delete($request)), "", "");
     }
 
+    /*
+    * ユーザー別家事集計取得
+    */
+    public function getSummary(Request $request)
+    {
+      $roomId = $request->get("room_id");
+      $groupBy = $request->get("group_by");
+      if ($groupBy == "user") {
+        return new JsonResponse($this->homeworkHistService->getSummaryUser($roomId));
+      } else if ($groupBy == "homework") {
+        return new JsonResponse($this->homeworkHistService->getSummaryHomework($roomId));
+      }
+      // TODO validate check
+      return new JsonResponse("invalid group_by key (please input gruoup_by=user or gruoup_by=homework)");
+    }
+
 }

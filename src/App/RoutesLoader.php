@@ -77,16 +77,13 @@ class RoutesLoader
         */
         // 家事一覧取得
         $api->get('/homework/{roomId}', "roomHomework.controller:getAll");
-        // // 家事一覧&家事別時間取得
-        // $api->get('/homework/room_id={roomId}', "roomHomework.controller:getHomeworkWithTodayTime");
-
         // 部屋別家事登録
         $api->post('/room/homework/update.json', "roomHomework.controller:insert");
         // 部屋別家事更新
         $api->put('/room/homework/update.json', "roomHomework.controller:update");
         // 部屋別家事削除
         $api->delete('/room/homework/update.json', "roomHomework.controller:delete");
-
+        
         /*
         * 家事履歴
         */
@@ -98,7 +95,9 @@ class RoutesLoader
         $api->put('/homeworkhist/update.json', "homeworkHist.controller:update");
         // 家事履歴削除
         $api->delete('/homeworkhist/update.json', "homeworkHist.controller:delete");
-
+        // ユーザー別家事集計取得
+        $api->get('/homeworkhist/summary', "homeworkHist.controller:getSummary");
+        
         $this->app->mount($this->app["api.endpoint"].'/'.$this->app["api.version"], $api);
+      }
     }
-}
