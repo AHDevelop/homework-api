@@ -23,4 +23,13 @@ class RoomsController extends BaseController
     {
         return new JsonResponse($this->$roomsService->getAll($id));
     }
+
+    /*
+    * 部屋設定更新
+    */
+    public function update(Request $request)
+    {
+        return new JsonResponse($this->$roomsService->update($request));
+    }
+
 }

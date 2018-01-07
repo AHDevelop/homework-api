@@ -52,6 +52,8 @@ class RoutesLoader
         */
         // 部屋一覧取得
         $api->get('/rooms/user_id={id}', "rooms.controller:getAll");
+        // 部屋設定更新
+        $api->put('room/update.json', "rooms.controller:update");
 
         /*
         * ユーザー
@@ -83,7 +85,7 @@ class RoutesLoader
         $api->put('/room/homework/update.json', "roomHomework.controller:update");
         // 部屋別家事削除
         $api->delete('/room/homework/update.json', "roomHomework.controller:delete");
-        
+
         /*
         * 家事履歴
         */
@@ -97,7 +99,7 @@ class RoutesLoader
         $api->delete('/homeworkhist/update.json', "homeworkHist.controller:delete");
         // ユーザー別家事集計取得
         $api->get('/homeworkhist/summary', "homeworkHist.controller:getSummary");
-        
+
         $this->app->mount($this->app["api.endpoint"].'/'.$this->app["api.version"], $api);
       }
     }

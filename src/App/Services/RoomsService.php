@@ -11,11 +11,11 @@ class RoomsService extends BaseService
     {
         $st = $this->pdo->prepare('
           SELECT
-            room_id, room_name, user_id, room_access_key, is_owned
+            room_id, room_name, user_id, room_number, is_owned
           FROM
             (
               SELECT
-                room_id, room_name, user_id, room_access_key, 1 as is_owned
+                room_id, room_name, user_id, room_number, 1 as is_owned
               FROM
                 room
               WHERE
@@ -24,7 +24,7 @@ class RoomsService extends BaseService
               UNION ALL
 
               SELECT
-                room_id, room_name, user_id, room_access_key, 0 as is_owned
+                room_id, room_name, user_id, room_number, 0 as is_owned
               FROM
                 room r
               where
@@ -54,4 +54,40 @@ class RoomsService extends BaseService
         return $results;
     }
 
+    /**
+    * 部屋の設定情報を更新する
+    */
+    public function update($Param)
+    {
+
+      // SQLステートメントを用意
+      $st = $this->pdo->prepare('
+        UPDATE
+        	room
+        SET
+        	room_name = :roomName, room_number = :roomNumber, updated_by = :updateUserId, updated_at = now()
+        WHERE
+        	room_id = :roomId
+        ;
+      ');
+
+      // 変数をバインド
+      $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+      $st->bindParam(':roomName', $roomName, $this->pdo::PARAM_STR);
+      $st->bindParam(':roomNumber', $roomNumber, $this->pdo::PARAM_STR);
+      $st->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
+
+      // 変数に実数を設定
+      $roomId = $Param->request->get("room_id");
+      $roomName = $Param->request->get("room_name");
+      $roomNumber = $Param->request->get("room_number");
+      $updateUserId = $Param->request->get("user_id");
+
+      $st->execute();
+      // SQLの実行結果を出力
+      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+
+      // 更新した部屋IDを返却する
+      return $roomId;
+    }
 }

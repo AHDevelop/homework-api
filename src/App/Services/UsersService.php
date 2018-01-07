@@ -61,19 +61,32 @@ class UsersService extends BaseService
     public function getAllWithRoom($roomId){
 
       $st = $this->pdo->prepare('
-      SELECT
-        user_master.*
-      FROM
-        room
-        LEFT JOIN room_user
-        ON room.room_id = room_user.room_id
-        LEFT JOIN user_master
-        ON room_user.user_id = user_master.user_id
-      WHERE
-        room.room_id = :roomId AND user_master.is_deleted = false
-      ORDER BY
-        user_id
-      ;'
+        SELECT
+          owner_user.user_id,
+          owner_user.email,
+          owner_user.user_name,
+          true as is_owner
+        FROM
+          room
+        LEFT JOIN user_master owner_user
+        ON room.user_id = owner_user.user_id
+        WHERE
+          room.room_id = :roomId AND owner_user.is_deleted = false
+        UNION ALL
+        SELECT
+          member_user.user_id,
+          member_user.email,
+          member_user.user_name,
+          false as is_owner
+        FROM
+          room_user
+        LEFT JOIN user_master member_user
+        ON room_user.user_id = member_user.user_id
+        WHERE
+          room_user.room_id = :roomId AND room_user.is_deleted = false
+        ORDER BY
+          is_owner desc, user_id
+        ;'
       );
 
       $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
@@ -224,33 +237,81 @@ class UsersService extends BaseService
     }
 
     /*
+    * 特定のユーザがすでに部屋ユーザーに登録済みかどうかチェックする
+    */
+    private function getRoomUser($roomId, $userId){
+
+      $st = $this->pdo->prepare('
+        SELECT
+          room_user.*
+        FROM
+          room_user
+        WHERE
+          room_id = :roomId AND user_id = :userId AND is_deleted = false
+      ');
+
+      // 変数をバインド
+      $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+      $st->bindParam(':userId', $userId, $this->pdo::PARAM_INT);
+
+      $st->execute();
+      // SQLの実行結果を出力
+      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+
+      $results = array();
+      while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+        $results[] = $row;
+      }
+
+      return $results;
+    }
+
+    /*
     * ユーザー追加
     */
     public function insertUserWithRoom($Param)
     {
+      // 部屋名と部屋番号から部屋を特定する
+      $st = $this->pdo->prepare('
+        SELECT
+          room.*
+        FROM
+          room
+        WHERE
+          room_name = :roomName AND room_number = :roomNumber
+      ');
 
-      // room_access_key からRoomIdを取得する
-      $roomAccessKey = $Param->request->get("room_access_key");
+      // 変数をバインド
+      $st->bindParam(':roomName', $roomName, $this->pdo::PARAM_STR);
+      $st->bindParam(':roomNumber', $roomNumber, $this->pdo::PARAM_STR);
 
-      // $roomAccessKeyを_で分割
-      $roomAccessKeySplite = explode('_', $roomAccessKey);
-      $roomId = $roomAccessKeySplite[0];
-      $accessKey = $roomAccessKeySplite[1];
+      // 変数に実数を設定
+      $roomName = $Param->request->get("room_name");
+      $roomNumber = $Param->request->get("room_no");
 
-      // 部屋とアクセスキーを取得
-      $roomInfo = $this->getOneRoom($roomId);
+      $st->execute();
+      // SQLの実行結果を出力
+      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
 
-      // マッチングチェック
-      $trueRoomAccessKey = $roomInfo[0]["room_access_key"];
-
-      if($trueRoomAccessKey != $accessKey){
-        return "認証エラー";
+      $results = array();
+      while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+        $results[] = $row;
       }
 
-      // TODO 重複チェック
+      if(count($results) != 1){
+        // 該当部屋が1件でない場合は認証エラー
+        return "部屋が存在しません。";
+      }
+
+      $roomId = $results[0]["room_id"];
+      $userId = $Param->request->get("user_id");
+
+      if(0 < count(self::getRoomUser($roomId, $userId))){
+        return "ユーザーは部屋に登録済みです。";
+      }
 
       // SQLステートメントを用意
-      $st = $this->pdo->prepare('
+      $st2 = $this->pdo->prepare('
         INSERT INTO room_user
           (room_id, user_id, is_deleted, created_by, created_at, updated_by, updated_at)
         VALUES
@@ -258,19 +319,21 @@ class UsersService extends BaseService
       ');
 
       // 変数をバインド
-      $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
-      $st->bindParam(':userId', $userId, $this->pdo::PARAM_INT);
-      $st->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
+      $st2->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+      $st2->bindParam(':userId', $userId, $this->pdo::PARAM_INT);
+      $st2->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
 
       // 変数に実数を設定
+      $roomId = $results[0]["room_id"];
       $userId = $Param->request->get("user_id");
       $updateUserId = "system";
 
-      $st->execute();
+      $st2->execute();
       // SQLの実行結果を出力
-      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st2->errorInfo());
 
-      return $this->pdo->lastInsertId();
+      // 追加した先の部屋IDを返却する
+      return $roomId;
     }
 
     /**
@@ -307,8 +370,6 @@ class UsersService extends BaseService
     */
     public function deleteUserWithRoom($Param)
     {
-        // TODO ユーザーの存在チェック
-
         // SQLステートメントを用意
         $st = $this->pdo->prepare('
           UPDATE room_user
@@ -325,7 +386,7 @@ class UsersService extends BaseService
         // 変数に実数を設定
         $removeUserId = $Param->request->get("remove_user_id");
         $roomId = $Param->request->get("room_id");
-        $updateUserId = "system";
+        $updateUserId = $Param->request->get("user_id");
 
         $st->execute();
 
