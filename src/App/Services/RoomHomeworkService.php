@@ -29,6 +29,7 @@ class RoomHomeworkService extends BaseService
                 home_work_hist
               where
                 room_id = :roomId
+                and is_deleted = false
                 and home_work_date = current_date
               group by
                 room_home_work_id

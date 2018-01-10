@@ -41,17 +41,19 @@ class RoutesLoader
     {
         $api = $this->app["controllers_factory"];
 
-        $api->get('/notes', "notes.controller:getAll");
-        $api->get('/notes/{id}', "notes.controller:getOne");
-        $api->post('/notes', "notes.controller:save");
-        $api->put('/notes/{id}', "notes.controller:update");
-        $api->delete('/notes/{id}', "notes.controller:delete");
+        // $api->get('/notes', "notes.controller:getAll");
+        // $api->get('/notes/{id}', "notes.controller:getOne");
+        // $api->post('/notes', "notes.controller:save");
+        // $api->put('/notes/{id}', "notes.controller:update");
+        // $api->delete('/notes/{id}', "notes.controller:delete");
 
         /*
         * 部屋
         */
         // 部屋一覧取得
         $api->get('/rooms/user_id={id}', "rooms.controller:getAll");
+        // 部屋設定更新
+        $api->put('room/update.json', "rooms.controller:update");
 
         /*
         * ユーザー
@@ -83,17 +85,21 @@ class RoutesLoader
         $api->put('/room/homework/update.json', "roomHomework.controller:update");
         // 部屋別家事削除
         $api->delete('/room/homework/update.json', "roomHomework.controller:delete");
-        
+
         /*
         * 家事履歴
         */
+        // 家事履歴一覧取得
+        $api->get('/homeworkhist/room_id={roomId}', "homeworkHist.controller:getAll");
         // 家事履歴登録
         $api->post('/homeworkhist/update.json', "homeworkHist.controller:insert");
+        // 家事履歴更新
+        $api->put('/homeworkhist/update.json', "homeworkHist.controller:update");
         // 家事履歴削除
         $api->delete('/homeworkhist/update.json', "homeworkHist.controller:delete");
         // ユーザー別家事集計取得
         $api->get('/homeworkhist/summary', "homeworkHist.controller:getSummary");
-        
+
         $this->app->mount($this->app["api.endpoint"].'/'.$this->app["api.version"], $api);
       }
     }

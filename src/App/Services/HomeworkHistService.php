@@ -5,6 +5,44 @@ namespace App\Services;
 class HomeworkHistService extends BaseService
 {
 
+    /**
+    * 当日の家事履歴を取得する
+    * 「家事一覧取得」と異なり、家事ごとにサマリは行わない
+    */
+    public function getAll($roomId)
+    {
+      $st = $this->pdo->prepare('
+        SELECT
+          rhh.home_work_hist_id,
+          rhh.room_id,
+          rhh.room_home_work_id,
+          rhw.home_work_name,
+          rhh.user_id,
+          rhh.home_work_date,
+          rhh.home_work_time_hh
+        FROM
+          home_work_hist rhh
+          LEFT JOIN room_home_work rhw
+          ON rhh.room_home_work_id = rhw.room_home_work_id
+        WHERE
+          rhh.room_id = :roomId AND rhh.is_deleted = false AND rhh.home_work_date = current_date
+        ORDER BY
+          rhh.home_work_hist_id desc;
+      ');
+
+      $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+      $st->execute();
+
+      // SQLエラーをログに出力
+      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+      $results = array();
+
+      while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+        $results[] = $row;
+      }
+      return $results;
+    }
+
     /*
     *　家事履歴を登録する
     */
@@ -47,6 +85,43 @@ class HomeworkHistService extends BaseService
     }
 
     /*
+    *　家事履歴を更新する
+    */
+    public function update($Param)
+    {
+
+        // SQLステートメントを用意
+        $st = $this->pdo->prepare('
+          UPDATE
+            home_work_hist
+          SET
+            home_work_time_hh = :homeworkTimeHH, updated_by = :updateUserId, updated_at = now()
+          WHERE
+            home_work_hist_id = :homeworkHistId;
+        ');
+
+        // 変数をバインド
+        $st->bindParam(':homeworkTimeHH', $homeworkTimeHH, $this->pdo::PARAM_INT);
+        $st->bindParam(':homeworkHistId', $homeworkHistId, $this->pdo::PARAM_STR);
+        $st->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
+
+        // 変数に実数を設定
+        $updateUserId = $Param->request->get("user_id");
+        $rocord = $Param->request->get("record");
+        foreach ($rocord as $id => $row) {
+
+          $homeworkHistId = $row["home_work_hist_id"];
+          $homeworkTimeHH = $row["home_work_time_hh"];
+
+          // SQLを実行
+          $st->execute();
+
+          // SQLの実行結果を出力
+          $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+        }
+    }
+
+    /*
     * 家事履歴削除
     */
     public function delete($Param)
@@ -71,7 +146,7 @@ class HomeworkHistService extends BaseService
         $rocord = $Param->request->get("record");
 
         foreach ($rocord as $id => $row) {
-          $homeworkHistId = $row["room_home_work_id"];
+          $homeworkHistId = $row["home_work_hist_id"];
 
           // SQLを実行
           $st->execute();
