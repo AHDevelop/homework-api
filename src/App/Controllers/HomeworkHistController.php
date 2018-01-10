@@ -40,10 +40,13 @@ class HomeworkHistController extends BaseController
     {
       $roomId = $request->get("room_id");
       $groupBy = $request->get("group_by");
+      $from = $request->get("from");
+      $to = $request->get("to");
+
       if ($groupBy == "user") {
-        return new JsonResponse($this->homeworkHistService->getSummaryUser($roomId));
+        return new JsonResponse($this->homeworkHistService->getSummaryUser($roomId, $from, $to));
       } else if ($groupBy == "homework") {
-        return new JsonResponse($this->homeworkHistService->getSummaryHomework($roomId));
+        return new JsonResponse($this->homeworkHistService->getSummaryHomework($roomId, $from, $to));
       }
       // TODO validate check
       return new JsonResponse("invalid group_by key (please input gruoup_by=user or gruoup_by=homework)");

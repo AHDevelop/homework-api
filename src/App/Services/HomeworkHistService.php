@@ -86,7 +86,7 @@ class HomeworkHistService extends BaseService
     /**
     * 部屋に紐づくユーザ毎の家事時間一覧を取得
     */
-    public function getSummaryUser($roomId)
+    public function getSummaryUser($roomId, $from, $to)
     {
         $sql = '
           SELECT
@@ -101,7 +101,9 @@ class HomeworkHistService extends BaseService
             FROM
               home_work_hist hwh
             WHERE
-              hwh.room_id = :roomId AND hwh.is_deleted = false
+              hwh.room_id = :roomId
+              AND hwh.is_deleted = false
+              AND hwh.home_work_date BETWEEN :from AND :to
             GROUP BY
               hwh.user_id
           ) hwh
@@ -110,6 +112,8 @@ class HomeworkHistService extends BaseService
 
       $st = $this->pdo->prepare($sql);
       $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+      $st->bindParam(':from', $from, $this->pdo::PARAM_STR);
+      $st->bindParam(':to', $to, $this->pdo::PARAM_STR);
       $st->execute();
       // SQLエラーをログに出力
       $this->monolog->debug($sql);
@@ -121,12 +125,12 @@ class HomeworkHistService extends BaseService
       return $results;
     }
 
-        /**
+    /**
     * 部屋に紐づく家事毎の家事時間一覧を取得
     */
-    public function getSummaryHomework($roomId)
+    public function getSummaryHomework($roomId, $from, $to)
     {
-        $sql = '
+        $sql = "
           SELECT
             hwh.room_home_work_id,
             rhw.home_work_name,
@@ -139,15 +143,19 @@ class HomeworkHistService extends BaseService
             FROM
               home_work_hist hwh
             WHERE
-              hwh.room_id = :roomId AND hwh.is_deleted = false
+              hwh.room_id = :roomId
+              AND hwh.is_deleted = false
+              AND hwh.home_work_date BETWEEN :from AND :to
             GROUP BY
               hwh.room_home_work_id
           ) hwh
           LEFT JOIN room_home_work rhw on hwh.room_home_work_id = rhw.room_home_work_id;
-        ';
+        ";
 
       $st = $this->pdo->prepare($sql);
       $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+      $st->bindParam(':from', $from, $this->pdo::PARAM_STR);
+      $st->bindParam(':to', $to, $this->pdo::PARAM_STR);
       $st->execute();
       // SQLエラーをログに出力
       $this->monolog->debug($sql);
