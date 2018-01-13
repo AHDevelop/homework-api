@@ -25,7 +25,7 @@ class UsersController extends BaseController
     {
         return new JsonResponse($this->usersService->getOneByKey($key));
     }
-    
+
     public function getAll()
     {
         return new JsonResponse($this->usersService->getAll());
@@ -40,11 +40,19 @@ class UsersController extends BaseController
     }
 
     /*
-    * 部屋ユーザー一覧取得
+    * 新規ユーザー登録
     */
     public function insertUser(Request $request)
     {
         return new JsonResponse($this->usersService->insertUser($request));
+    }
+
+    /*
+    * ユーザー更新
+    */
+    public function updateUser(Request $request)
+    {
+        return new JsonResponse($this->usersService->updateUser($request));
     }
 
     /*

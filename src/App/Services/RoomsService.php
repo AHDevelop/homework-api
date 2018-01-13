@@ -87,7 +87,11 @@ class RoomsService extends BaseService
       // SQLの実行結果を出力
       $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
 
-      // 更新した部屋IDを返却する
-      return $roomId;
+      $results[room_id] = $roomId;
+      $results[room_name] = $roomName;
+      $results[room_number] = $roomNumber;
+
+      // 更新した部屋情報を返却する
+      return $results;
     }
 }

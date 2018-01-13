@@ -66,6 +66,8 @@ class RoutesLoader
         $api->get('/users/user_id={id}', "users.controller:getOne");
         // 新規ユーザー登録
         $api->post('/users/update.json', "users.controller:insertUser");
+        // ユーザー更新
+        $api->put('/users/update.json', "users.controller:updateUser");
 
         // 部屋ユーザー一覧取得
         $api->get('/users/room_id={roomId}', "users.controller:getAllWithRoom");

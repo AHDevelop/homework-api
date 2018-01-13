@@ -267,6 +267,40 @@ class UsersService extends BaseService
     }
 
     /*
+    * ユーザー更新
+    */
+    public function updateUser($Param){
+
+      // SQLステートメントを用意
+      $st = $this->pdo->prepare('
+        UPDATE user_master
+          SET user_name = :userName, updated_by = :updateUserId, updated_at = now()
+        WHERE
+          user_id = :userId;
+      ');
+
+      // 変数をバインド
+      $st->bindParam(':userId', $userId, $this->pdo::PARAM_INT);
+      $st->bindParam(':userName', $userName, $this->pdo::PARAM_STR);
+      $st->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
+
+      // 変数に実数を設定
+      $userId = $Param->request->get("user_id");
+      $userName = $Param->request->get("user_name");
+      $updateUserId = $Param->request->get("user_id");
+
+      $st->execute();
+
+      // SQLの実行結果を出力
+      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+
+      $result["user_id"] = $userId;
+      $result["user_name"] = $userName;
+
+      return $result;
+    }
+
+    /*
     * ユーザー追加
     */
     public function insertUserWithRoom($Param)
