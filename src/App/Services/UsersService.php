@@ -143,20 +143,20 @@ class UsersService extends BaseService
       // SQLステートメントを用意
       $st2 = $this->pdo->prepare('
         INSERT INTO room
-          (room_name, user_id, room_access_key, is_deleted, created_by, created_at, updated_by, updated_at)
+          (room_name, user_id, room_number, is_deleted, created_by, created_at, updated_by, updated_at)
         VALUES
-          (:roomName, :userId, :roomAccessKey, false, :updateUserId, now(), :updateUserId, now());
+          (:roomName, :userId, :roomNumber, false, :updateUserId, now(), :updateUserId, now());
       ');
 
       // 変数をバインド
       $st2->bindParam(':roomName', $roomName, $this->pdo::PARAM_STR);
       $st2->bindParam(':userId', $userId, $this->pdo::PARAM_INT);
-      $st2->bindParam(':roomAccessKey', $roomAccessKey, $this->pdo::PARAM_STR);
+      $st2->bindParam(':roomNumber', $roomNumber, $this->pdo::PARAM_STR);
       $st2->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
 
       // 変数に実数を設定
-      $roomName = "NEW ROOM"; // TODO 編集する画面がアプリにない
-      $roomAccessKey = "hogehogehoge"; // TODO make SHA512 hash values
+      $roomName = $userName . "さんの部屋";
+      $roomNumber = $this->makeRoomNumber();
       $updateUserId = "system";
 
       $st2->execute();
@@ -207,6 +207,16 @@ class UsersService extends BaseService
       }
 
       return $names;
+    }
+
+    /*
+    * 新規の部屋番号を生成する
+    */
+    private function makeRoomNumber(){
+
+      // 一意性は不要なためランダムに4桁の数字文字列を作り出す
+      $newRoomNumber =  mt_rand(0, 10);
+      return sprintf('%04d', $newRoomNumber);
     }
 
     /*
