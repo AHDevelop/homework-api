@@ -21,7 +21,8 @@ class RoomsController extends BaseController
     */
     public function getAll($id)
     {
-        return new JsonResponse($this->$roomsService->getAll($id));
+        $result = $this->$roomsService->getAll($id, $responce);
+        return $this->returnResult($result, $responce);
     }
 
     /*
@@ -29,7 +30,8 @@ class RoomsController extends BaseController
     */
     public function update(Request $request)
     {
-        return new JsonResponse($this->$roomsService->update($request));
+        $result = $this->$roomsService->update($request, $responce);
+        return $this->returnResult($result, $responce);
     }
 
 }

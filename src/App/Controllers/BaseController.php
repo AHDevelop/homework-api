@@ -27,14 +27,17 @@ class BaseController
     /*
     * 結果を返却する
     */
-    protected function returnResult($responce)
+    protected function returnResult($results, $responce)
     {
+
+        $responce["results"] = $results;
+
         if($responce["message"] == ""){
-          $responce["message"] = "正常に完了しました。";
+            //$responce["message"] = "正常に完了しました。";
         };
 
         if($responce["status"] == ""){
-          $responce["status"] = "200";
+            $responce["status"] = "200";
         };
 
         return new JsonResponse($responce);

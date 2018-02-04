@@ -9,7 +9,7 @@ class HomeworkHistService extends BaseService
     * 当日の家事履歴を取得する
     * 「家事一覧取得」と異なり、家事ごとにサマリは行わない
     */
-    public function getAll($roomId)
+    public function getAll($roomId, &$responce)
     {
       $st = $this->pdo->prepare('
         SELECT
@@ -46,7 +46,7 @@ class HomeworkHistService extends BaseService
     /*
     *　家事履歴を登録する
     */
-    public function insert($Param, $responce)
+    public function insert($Param, &$responce)
     {
         // SQLステートメントを用意
         $st = $this->pdo->prepare('
@@ -81,13 +81,14 @@ class HomeworkHistService extends BaseService
           $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
         }
 
+        $responce["message"] = "家事履歴を登録しました。";
         return;
     }
 
     /*
     *　家事履歴を更新する
     */
-    public function update($Param)
+    public function update($Param, &$responce)
     {
 
         // SQLステートメントを用意
@@ -119,12 +120,15 @@ class HomeworkHistService extends BaseService
           // SQLの実行結果を出力
           $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
         }
+
+        $responce["message"] = "家事履歴を更新しました。";
+        return;
     }
 
     /*
     * 家事履歴削除
     */
-    public function delete($Param)
+    public function delete($Param, &$responce)
     {
 
         // SQLステートメントを用意
@@ -155,13 +159,14 @@ class HomeworkHistService extends BaseService
           $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
         }
 
-        return $this->pdo->lastInsertId();
+        $responce["message"] = "家事履歴を削除しました。";
+        return;
     }
 
     /**
     * 部屋に紐づくユーザ毎の家事時間一覧を取得
     */
-    public function getSummaryUser($roomId, $from, $to)
+    public function getSummaryUser($roomId, $from, $to, &$responce)
     {
         $sql = '
           SELECT
@@ -197,13 +202,14 @@ class HomeworkHistService extends BaseService
       while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
         $results[] = $row;
       }
+
       return $results;
     }
 
     /**
     * 部屋に紐づく家事毎の家事時間一覧を取得
     */
-    public function getSummaryHomework($roomId, $from, $to)
+    public function getSummaryHomework($roomId, $from, $to, &$responce)
     {
         $sql = "
           SELECT
@@ -239,6 +245,7 @@ class HomeworkHistService extends BaseService
       while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
         $results[] = $row;
       }
+      
       return $results;
     }
 }

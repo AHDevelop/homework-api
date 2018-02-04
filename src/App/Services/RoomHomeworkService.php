@@ -8,7 +8,7 @@ class RoomHomeworkService extends BaseService
     /**
     * 部屋に紐づく家事全件を取得する
     */
-    public function getAll($roomId)
+    public function getAll($roomId, &$responce)
     {
       $st = $this->pdo->prepare('
         SELECT
@@ -48,13 +48,14 @@ class RoomHomeworkService extends BaseService
       while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
         $results[] = $row;
       }
+
       return $results;
     }
 
     /*
     *　家事を登録する
     */
-    public function insert($Param)
+    public function insert($Param, &$responce)
     {
         // SQLステートメントを用意
         $st = $this->pdo->prepare('
@@ -91,13 +92,15 @@ class RoomHomeworkService extends BaseService
           $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
         }
 
+        $responce["message"] = "家事を登録しました。";
+
         return $this->pdo->lastInsertId();
     }
 
     /*
     *　家事を更新する
     */
-    public function update($Param)
+    public function update($Param, &$responce)
     {
 
       // SQLステートメントを用意
@@ -133,12 +136,16 @@ class RoomHomeworkService extends BaseService
           // SQLの実行結果を出力
           $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
         }
+
+        $responce["message"] = "家事履歴を更新しました。";
+
+        return;
     }
 
     /*
     * 部屋別家事削除
     */
-    public function delete($Param)
+    public function delete($Param, &$responce)
     {
 
         // SQLステートメントを用意
@@ -168,6 +175,10 @@ class RoomHomeworkService extends BaseService
           // SQLの実行結果を出力
           $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
         }
+
+        $responce["message"] = "家事履歴を削除しました。";
+
+        return;
     }
 
 }
