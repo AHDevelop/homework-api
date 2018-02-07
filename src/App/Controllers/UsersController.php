@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class UsersController
+class UsersController extends BaseController
 {
 
     protected $usersService;
@@ -18,18 +18,65 @@ class UsersController
 
     public function getOne($id)
     {
-        return new JsonResponse($this->usersService->getOne($id));
+        $result = $this->usersService->getOne($id, $responce);
+        return $this->returnResult($result, $responce);
+    }
+
+    public function getOneByKey($key)
+    {
+        $result = $this->usersService->getOneByKey($key, $responce);
+        return $this->returnResult($result, $responce);
     }
 
     public function getAll()
     {
-        return new JsonResponse($this->usersService->getAll());
+        $result = $this->usersService->getAll($responce);
+        return $this->returnResult($result, $responce);
     }
 
-    public function getDataFromRequest(Request $request)
+    /*
+    * 部屋ユーザー一覧取得
+    */
+    public function getAllWithRoom($roomId)
     {
-        return $users = array(
-            "user_name" => $request->request->get("user_name")
-        );
+        $result = $this->usersService->getAllWithRoom($roomId, $responce);
+        return $this->returnResult($result, $responce);
     }
+
+    /*
+    * 新規ユーザー登録
+    */
+    public function insertUser(Request $request)
+    {
+        $result = $this->usersService->insertUser($request, $responce);
+        return $this->returnResult($result, $responce);
+    }
+
+    /*
+    * ユーザー更新
+    */
+    public function updateUser(Request $request)
+    {
+        $result = $this->usersService->updateUser($request, $responce);
+        return $this->returnResult($result, $responce);
+    }
+
+    /*
+    * 部屋ユーザー追加
+    */
+    public function insertUserWithRoom(Request $request)
+    {
+        $result = $this->usersService->insertUserWithRoom($request, $responce);
+        return $this->returnResult($result, $responce);
+    }
+
+    /*
+    * 部屋ユーザー削除
+    */
+    public function deleteUserWithRoom(Request $request)
+    {
+        $result = $this->usersService->deleteUserWithRoom($request, $responce);
+        return $this->returnResult($result, $responce);
+    }
+
 }
