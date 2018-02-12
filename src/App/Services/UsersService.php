@@ -137,7 +137,14 @@ class UsersService extends BaseService
       // SQLの実行結果を出力
       $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
 
+      //結果返却用オブジェクト
+      $results = array();
       $userId = $this->pdo->lastInsertId();
+      $results["userId"] = $userId;
+      $results["email"] = $email;
+      $results["user_name"] = $userName;
+      $results["auth_type"] = $authType;
+      $results["auth_id"] = $authId;
 
       // 部屋の新規作成
 
@@ -165,6 +172,9 @@ class UsersService extends BaseService
       // SQLの実行結果を出力
       $this->monolog->debug(sprintf("SQL log is '%s'  "), $st2->errorInfo());
       $roomId = $this->pdo->lastInsertId();
+      $results["roomId"] = $roomId;
+      $results["roomName"] = $roomName;
+      $results["roomNumber"] = $roomNumber;
 
       // 家事マスタをすべて取得
       $homeworkMasterList = $this->getAllHomeworkMaster();
@@ -193,19 +203,8 @@ class UsersService extends BaseService
         $st3->execute();
         $this->monolog->debug(sprintf("SQL log is '%s'  "), $st3->errorInfo());
       }
-
-      // 登録したユーザ情報を返却するためにSelect
-      $userId = $this->pdo->lastInsertId();
-      $st = $this->pdo->prepare('SELECT user_id, email, user_name, auth_type, auth_id FROM user_master where user_id = :userId');
-      $st->bindValue(':userId', $userId, $this->pdo::PARAM_INT);
-      $st->execute();
-
-      $names = array();
-      while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
-        $names[] = $row;
-      }
-
-      return $names;
+      
+      return $results;
     }
 
     /*
