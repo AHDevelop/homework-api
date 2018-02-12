@@ -138,13 +138,12 @@ class UsersService extends BaseService
       $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
 
       //結果返却用オブジェクト
-      $results = array();
       $userId = $this->pdo->lastInsertId();
       $results["userId"] = $userId;
       $results["email"] = $email;
-      $results["user_name"] = $userName;
-      $results["auth_type"] = $authType;
-      $results["auth_id"] = $authId;
+      $results["userName"] = $userName;
+      $results["authType"] = $authType;
+      $results["authId"] = $authId;
 
       // 部屋の新規作成
 
@@ -203,7 +202,7 @@ class UsersService extends BaseService
         $st3->execute();
         $this->monolog->debug(sprintf("SQL log is '%s'  "), $st3->errorInfo());
       }
-      
+
       return $results;
     }
 
