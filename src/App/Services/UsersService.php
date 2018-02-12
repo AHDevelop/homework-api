@@ -212,7 +212,7 @@ class UsersService extends BaseService
     private function makeRoomNumber(){
 
       // 一意性は不要なためランダムに4桁の数字文字列を作り出す
-      $newRoomNumber =  mt_rand(0, 10);
+      $newRoomNumber =  mt_rand(101, 9999);
       return sprintf('%04d', $newRoomNumber);
     }
 
