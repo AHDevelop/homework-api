@@ -169,8 +169,6 @@ class UsersService extends BaseService
       // 家事マスタをすべて取得
       $homeworkMasterList = $this->getAllHomeworkMaster();
 
-      $homeworkMasterList[0]["room_access_key"];
-
       // 部屋家事の登録
       // SQLステートメントを用意
       $st3 = $this->pdo->prepare('
