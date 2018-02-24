@@ -27,9 +27,9 @@ $app->register(new \Euskadi31\Silex\Provider\CorsServiceProvider);
 
 $app->register(new ServiceControllerServiceProvider());
 
-$app->register(new DoctrineServiceProvider(), array(
-  "db.options" => $app["db.options"]
-));
+// $app->register(new DoctrineServiceProvider(), array(
+//   "db.options" => $app["db.options"]
+// ));
 
 // Heroku DBへの参照
 $app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider('pdo'),
@@ -48,7 +48,8 @@ $app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider
 $app->register(new HttpCacheServiceProvider(), array("http_cache.cache_dir" => ROOT_PATH . "/storage/cache",));
 
 $app->register(new MonologServiceProvider(), array(
-    "monolog.logfile" => ROOT_PATH . "/storage/logs/" . Carbon::now('Europe/London')->format("Y-m-d") . ".log",
+  'monolog.logfile' => 'php://stderr',
+//    "monolog.logfile" => ROOT_PATH . "/storage/logs/" . Carbon::now('Europe/London')->format("Y-m-d") . ".log",
     "monolog.level" => "debug",//$app["log.level"],
     "monolog.name" => "application"
 ));

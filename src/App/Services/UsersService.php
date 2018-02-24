@@ -132,7 +132,13 @@ class UsersService extends BaseService
 
       $this->executeSql($st);
 
+      //結果返却用オブジェクト
       $userId = $this->pdo->lastInsertId();
+      $results["userId"] = $userId;
+      $results["email"] = $email;
+      $results["userName"] = $userName;
+      $results["authType"] = $authType;
+      $results["authId"] = $authId;
 
       // 部屋の新規作成
 
@@ -158,6 +164,9 @@ class UsersService extends BaseService
       $this->executeSql($st2);
 
       $roomId = $this->pdo->lastInsertId();
+      $results["roomId"] = $roomId;
+      $results["roomName"] = $roomName;
+      $results["roomNumber"] = $roomNumber;
 
       // 家事マスタをすべて取得
       $homeworkMasterList = $this->getAllHomeworkMaster();
@@ -234,7 +243,7 @@ class UsersService extends BaseService
     private function makeRoomNumber(){
 
       // 一意性は不要なためランダムに4桁の数字文字列を作り出す
-      $newRoomNumber =  mt_rand(0, 10);
+      $newRoomNumber =  mt_rand(101, 9999);
       return sprintf('%04d', $newRoomNumber);
     }
 
