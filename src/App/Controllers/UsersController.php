@@ -55,7 +55,7 @@ class UsersController extends BaseController
         $appToken = $this->usersService->insertUserToken($user['user_id'], $request ->request->get("auth_token"));
         $user['app_token'] = $appToken;
         
-        return new JsonResponse($user);
+        return $this->returnResult($result, $responce);
     }
 
     /*
