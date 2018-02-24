@@ -7,7 +7,7 @@ class RoomsService extends BaseService
     /**
     * 部屋を取得する
     */
-    public function getAll($userId)
+    public function getAll($userId, &$responce)
     {
         $st = $this->pdo->prepare('
           SELECT
@@ -57,7 +57,7 @@ class RoomsService extends BaseService
     /**
     * 部屋の設定情報を更新する
     */
-    public function update($Param)
+    public function update($Param, &$responce)
     {
 
       // SQLステートメントを用意
@@ -90,6 +90,8 @@ class RoomsService extends BaseService
       $results[room_id] = $roomId;
       $results[room_name] = $roomName;
       $results[room_number] = $roomNumber;
+
+      $responce["message"] = "設定を更新しました。";
 
       // 更新した部屋情報を返却する
       return $results;

@@ -16,10 +16,6 @@ class RoutesLoader
 
     private function instantiateControllers()
     {
-        $this->app['notes.controller'] = function() {
-            return new Controllers\NotesController($this->app['notes.service']);
-        };
-
         $this->app['users.controller'] = function() {
             return new Controllers\UsersController($this->app['users.service']);
         };
@@ -40,8 +36,6 @@ class RoutesLoader
     public function bindRoutesToControllers()
     {
         $api = $this->app["controllers_factory"];
-
-        // TODO ここで認証を入れればいい？
 
         /*
         * 部屋

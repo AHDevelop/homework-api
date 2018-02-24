@@ -21,24 +21,26 @@ class HomeworkHistController extends BaseController
     */
     public function getAll($roomId)
     {
-        return new JsonResponse($this->homeworkHistService->getAll($roomId));
+        $result = $this->homeworkHistService->getAll($roomId, $responce);
+        return $this->returnResult($result, $responce);
     }
 
     /*
-    * 家事履歴登録登録
+    * 家事履歴登録
     */
     public function insert(Request $request){
 
-      $this->homeworkHistService->insert($request, $responce);
-      return $this->returnResult($responce);
+        $result = $this->homeworkHistService->insert($request, $responce);
+        return $this->returnResult($result, $responce);
     }
 
     /*
-    * 部屋別家事更新
+    * 家事履歴更新
     */
     public function update(Request $request){
 
-      return new JsonResponse(array("id" => $this->homeworkHistService->update($request)));
+        $result = $this->homeworkHistService->update($request, $responce);
+        return $this->returnResult($result, $responce);
     }
 
     /*
@@ -46,7 +48,8 @@ class HomeworkHistController extends BaseController
     */
     public function delete(Request $request){
 
-      return $this->returnResult(array("id" => $this->homeworkHistService->delete($request)), "", "");
+        $result = $this->homeworkHistService->delete($request, $responce);
+        return $this->returnResult($result, $responce);
     }
 
     /*
@@ -59,13 +62,18 @@ class HomeworkHistController extends BaseController
       $from = $request->get("from");
       $to = $request->get("to");
 
+      $result;
       if ($groupBy == "user") {
-        return new JsonResponse($this->homeworkHistService->getSummaryUser($roomId, $from, $to));
+        $result = $this->homeworkHistService->getSummaryUser($roomId, $from, $to, $responce);
+        return $this->returnResult($result, $responce);
       } else if ($groupBy == "homework") {
-        return new JsonResponse($this->homeworkHistService->getSummaryHomework($roomId, $from, $to));
+
+        $result = $this->homeworkHistService->getSummaryHomework($roomId, $from, $to, $responce);
+        return $this->returnResult($result, $responce);
       }
       // TODO validate check
-      return new JsonResponse("invalid group_by key (please input gruoup_by=user or gruoup_by=homework)");
+      $responce["message"] = "invalid group_by key (please input gruoup_by=user or gruoup_by=homework)";
+      return $this->returnResult("", $responce);
     }
 
 }

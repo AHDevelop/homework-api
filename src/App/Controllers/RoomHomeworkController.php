@@ -21,7 +21,8 @@ class RoomHomeworkController extends BaseController
     */
     public function getAll($roomId)
     {
-        return new JsonResponse($this->roomHomeworkService->getAll($roomId));
+        $result = $this->roomHomeworkService->getAll($roomId, $responce);
+        return $this->returnResult($result, $responce);
     }
 
     /*
@@ -29,7 +30,8 @@ class RoomHomeworkController extends BaseController
     */
     public function insert(Request $request){
 
-      return new JsonResponse(array("id" => $this->roomHomeworkService->insert($request)));
+      $result = $this->roomHomeworkService->insert($request, $responce);
+      return $this->returnResult($result, $responce);
     }
 
     /*
@@ -37,7 +39,8 @@ class RoomHomeworkController extends BaseController
     */
     public function update(Request $request){
 
-      return new JsonResponse(array("id" => $this->roomHomeworkService->update($request)));
+      $result = $this->roomHomeworkService->update($request, $responce);
+      return $this->returnResult($result, $responce);
     }
 
     /*
@@ -45,7 +48,8 @@ class RoomHomeworkController extends BaseController
     */
     public function delete(Request $request){
 
-      return new JsonResponse(array("id" => $this->roomHomeworkService->delete($request)));
+      $result = $this->roomHomeworkService->delete($request, $responce);
+      return $this->returnResult($result, $responce);
     }
 
 }

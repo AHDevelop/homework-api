@@ -18,17 +18,20 @@ class UsersController extends BaseController
 
     public function getOne($id)
     {
-        return new JsonResponse($this->usersService->getOne($id));
+        $result = $this->usersService->getOne($id, $responce);
+        return $this->returnResult($result, $responce);
     }
 
     public function getOneByKey($key)
     {
-        return new JsonResponse($this->usersService->getOneByKey($key));
+        $result = $this->usersService->getOneByKey($key, $responce);
+        return $this->returnResult($result, $responce);
     }
 
     public function getAll()
     {
-        return new JsonResponse($this->usersService->getAll());
+        $result = $this->usersService->getAll($responce);
+        return $this->returnResult($result, $responce);
     }
 
     /*
@@ -36,7 +39,8 @@ class UsersController extends BaseController
     */
     public function getAllWithRoom($roomId)
     {
-        return new JsonResponse($this->usersService->getAllWithRoom($roomId));
+        $result = $this->usersService->getAllWithRoom($roomId, $responce);
+        return $this->returnResult($result, $responce);
     }
 
     /*
@@ -59,7 +63,8 @@ class UsersController extends BaseController
     */
     public function updateUser(Request $request)
     {
-        return new JsonResponse($this->usersService->updateUser($request));
+        $result = $this->usersService->updateUser($request, $responce);
+        return $this->returnResult($result, $responce);
     }
 
     /*
@@ -67,7 +72,8 @@ class UsersController extends BaseController
     */
     public function insertUserWithRoom(Request $request)
     {
-        return new JsonResponse($this->usersService->insertUserWithRoom($request));
+        $result = $this->usersService->insertUserWithRoom($request, $responce);
+        return $this->returnResult($result, $responce);
     }
 
     /*
@@ -75,7 +81,8 @@ class UsersController extends BaseController
     */
     public function deleteUserWithRoom(Request $request)
     {
-        return new JsonResponse($this->usersService->deleteUserWithRoom($request));
+        $result = $this->usersService->deleteUserWithRoom($request, $responce);
+        return $this->returnResult($result, $responce);
     }
 
 }
