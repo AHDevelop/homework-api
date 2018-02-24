@@ -12,7 +12,7 @@ class UsersService extends BaseService
     {
       $st = $this->pdo->prepare('SELECT user_id, email, user_name, auth_type, auth_id FROM user_master where user_id = :userId');
       $st->bindValue(':userId', $id, $this->pdo::PARAM_INT);
-      $st->execute();
+      $this->executeSql($st);
 
       $names = array();
       while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
@@ -29,7 +29,7 @@ class UsersService extends BaseService
     {
       $st = $this->pdo->prepare('SELECT user_id, email, user_name, auth_type, auth_id FROM user_master where auth_id = :authId');
       $st->bindValue(':authId', $key, $this->pdo::PARAM_INT);
-      $st->execute();
+      $this->executeSql($st);
 
       $names = array();
       while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
@@ -45,7 +45,7 @@ class UsersService extends BaseService
     public function getAll()
     {
         $st = $this->pdo->prepare('SELECT user_id, email, user_name, auth_type, auth_id FROM user_master');
-        $st->execute();
+        $this->executeSql($st);
 
         $names = array();
         while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
@@ -90,10 +90,7 @@ class UsersService extends BaseService
       );
 
       $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
-      $st->execute();
-
-      // SQLエラーをログに出力
-      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+      $this->executeSql($st);
 
       $results = array();
       while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
@@ -132,9 +129,7 @@ class UsersService extends BaseService
       $authId = $Param->request->get("auth_id");
       $updateUserId = "system";
 
-      $st->execute();
-      // SQLの実行結果を出力
-      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+      $this->executeSql($st);
 
       $userId = $this->pdo->lastInsertId();
 
@@ -159,16 +154,12 @@ class UsersService extends BaseService
       $roomAccessKey = "hogehogehoge"; // TODO make SHA512 hash values
       $updateUserId = "system";
 
-      $st2->execute();
+      $this->executeSql($st2);
 
-      // SQLの実行結果を出力
-      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st2->errorInfo());
       $roomId = $this->pdo->lastInsertId();
 
       // 家事マスタをすべて取得
       $homeworkMasterList = $this->getAllHomeworkMaster();
-
-      $homeworkMasterList[0]["room_access_key"];
 
       // 部屋家事の登録
       // SQLステートメントを用意
@@ -191,22 +182,49 @@ class UsersService extends BaseService
       foreach ($homeworkMasterList as $key => $homeworkMaster) {
         $homeWorkName = $homeworkMaster["home_work_name"];
         $baseHomeworkTimeHH = $homeworkMaster["base_home_work_time_hh"];
-        $st3->execute();
-        $this->monolog->debug(sprintf("SQL log is '%s'  "), $st3->errorInfo());
+        $this->executeSql($st3);
       }
 
       // 登録したユーザ情報を返却するためにSelect
-      $userId = $this->pdo->lastInsertId();
+      $this->monolog->debug($userId);
       $st = $this->pdo->prepare('SELECT user_id, email, user_name, auth_type, auth_id FROM user_master where user_id = :userId');
       $st->bindValue(':userId', $userId, $this->pdo::PARAM_INT);
-      $st->execute();
+      $this->executeSql($st);
 
-      $names = array();
+      $usres = array();
       while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
-        $names[] = $row;
+        $users[] = $row;
       }
 
-      return $names;
+      return $users[0];
+    }
+
+    /*
+    * アプリ用のトークン作成
+    */
+    private function createAppToken($userId, $authToken){
+      return hash('sha256', $userId . $authToken);
+    }
+    /*
+    * ユーザトークン作成
+    * 正常に作成した場合は、$appTokenを返します
+    */
+    public function insertUserToken($userId, $authToken){
+      // SQLステートメントを用意
+      $st = $this->pdo->prepare('
+      INSERT INTO user_token
+        (user_id, token, is_deleted, created_by, created_at, updated_by, updated_at)
+      VALUES
+        (:userId, :token, false, :updateUserId, now(), :updateUserId, now());
+      ');
+
+      // 変数をバインド
+      $appToken = $this->createAppToken($userId, $authToken);
+      $st->bindParam(':userId', $userId, $this->pdo::PARAM_STR);
+      $st->bindParam(':token', $appToken, $this->pdo::PARAM_STR);
+      $st->bindParam(':updateUserId', $userId, $this->pdo::PARAM_STR);
+      $this->executeSql($st);
+      return $appToken;
     }
 
     /*
@@ -223,10 +241,7 @@ class UsersService extends BaseService
           is_deleted = false;
       ');
 
-      $st->execute();
-
-      // SQLエラーをログに出力
-      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+      $this->executeSql($st);
 
       $results = array();
       while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
@@ -254,9 +269,7 @@ class UsersService extends BaseService
       $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
       $st->bindParam(':userId', $userId, $this->pdo::PARAM_INT);
 
-      $st->execute();
-      // SQLの実行結果を出力
-      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+      $this->executeSql($st);
 
       $results = array();
       while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
@@ -289,10 +302,7 @@ class UsersService extends BaseService
       $userName = $Param->request->get("user_name");
       $updateUserId = $Param->request->get("user_id");
 
-      $st->execute();
-
-      // SQLの実行結果を出力
-      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+      $this->executeSql($st);
 
       $result["user_id"] = $userId;
       $result["user_name"] = $userName;
@@ -323,9 +333,7 @@ class UsersService extends BaseService
       $roomName = $Param->request->get("room_name");
       $roomNumber = $Param->request->get("room_no");
 
-      $st->execute();
-      // SQLの実行結果を出力
-      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+      $this->executeSql($st);
 
       $results = array();
       while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
@@ -362,9 +370,7 @@ class UsersService extends BaseService
       $userId = $Param->request->get("user_id");
       $updateUserId = "system";
 
-      $st2->execute();
-      // SQLの実行結果を出力
-      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st2->errorInfo());
+      $this->executeSql($st2);
 
       // 追加した先の部屋IDを返却する
       return $roomId;
@@ -386,10 +392,7 @@ class UsersService extends BaseService
         );
 
         $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
-        $st->execute();
-
-        // SQLエラーをログに出力
-        $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+        $this->executeSql($st);
 
         $results = array();
         while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
@@ -422,10 +425,7 @@ class UsersService extends BaseService
         $roomId = $Param->request->get("room_id");
         $updateUserId = $Param->request->get("user_id");
 
-        $st->execute();
-
-        // SQLの実行結果を出力
-        $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+        $this->executeSql($st);
 
         return $this->pdo->lastInsertId();
     }

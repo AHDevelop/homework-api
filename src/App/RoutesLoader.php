@@ -41,11 +41,7 @@ class RoutesLoader
     {
         $api = $this->app["controllers_factory"];
 
-        // $api->get('/notes', "notes.controller:getAll");
-        // $api->get('/notes/{id}', "notes.controller:getOne");
-        // $api->post('/notes', "notes.controller:save");
-        // $api->put('/notes/{id}', "notes.controller:update");
-        // $api->delete('/notes/{id}', "notes.controller:delete");
+        // TODO ここで認証を入れればいい？
 
         /*
         * 部屋
@@ -60,7 +56,7 @@ class RoutesLoader
         */
         // 全ユーザー取得
         $api->get('/users', "users.controller:getAll");
-        // auth key でユーザー取得
+        // key(gmailでuser_masterをチェックし、存在確認する)
         $api->get('/users/key={key}', "users.controller:getOneByKey");
         // IDでユーザーを取得
         $api->get('/users/user_id={id}', "users.controller:getOne");

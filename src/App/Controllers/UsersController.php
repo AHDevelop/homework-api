@@ -44,7 +44,14 @@ class UsersController extends BaseController
     */
     public function insertUser(Request $request)
     {
-        return new JsonResponse($this->usersService->insertUser($request));
+        // ユーザ登録
+        $user = $this->usersService->insertUser($request);
+
+        // ユーザトークン登録
+        $appToken = $this->usersService->insertUserToken($user['user_id'], $request ->request->get("auth_token"));
+        $user['app_token'] = $appToken;
+        
+        return new JsonResponse($user);
     }
 
     /*
