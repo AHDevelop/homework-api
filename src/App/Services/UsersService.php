@@ -197,7 +197,12 @@ class UsersService extends BaseService
         $users[] = $row;
       }
 
-      return $users[0];
+      $newinfo = $users[0];
+      $newinfo['room_id'] = $roomId;
+      $newinfo['room_number'] = $roomNumber;
+      $newinfo['room_name'] = $roomName;
+      
+      return $newinfo;
     }
 
     /*
