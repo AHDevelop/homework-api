@@ -30,6 +30,9 @@ class BaseController
     protected function returnResult($results, $responce)
     {
 
+        if ($responce == null) {
+          $responce = array();
+        }
         $responce["results"] = $results;
 
         if($responce["message"] == ""){
