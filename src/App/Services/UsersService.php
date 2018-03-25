@@ -31,12 +31,14 @@ class UsersService extends BaseService
       $st->bindValue(':authId', $key, $this->pdo::PARAM_INT);
       $this->executeSql($st);
 
-      $names = array();
+      $results = array();
       while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
-        $names[] = $row;
+        $results[] = $row;
       }
 
-      return $names;
+      $this->monolog->debug($results);
+
+      return $results;
     }
 
     /**
@@ -210,7 +212,7 @@ class UsersService extends BaseService
       $newinfo['room_id'] = $roomId;
       $newinfo['room_number'] = $roomNumber;
       $newinfo['room_name'] = $roomName;
-      
+
       return $newinfo;
     }
 
@@ -220,6 +222,7 @@ class UsersService extends BaseService
     private function createAppToken($userId, $authToken){
       return hash('sha256', $userId . $authToken);
     }
+
     /*
     * ユーザトークン作成
     * 正常に作成した場合は、$appTokenを返します
@@ -240,6 +243,32 @@ class UsersService extends BaseService
       $st->bindParam(':updateUserId', $userId, $this->pdo::PARAM_STR);
       $this->executeSql($st);
       return $appToken;
+    }
+
+
+    /*
+    * ユーザトークン更新
+    * 正常に作成した場合は、$appTokenを返します
+    */
+    public function updateUserToken($userId, $authToken){
+
+        // SQLステートメントを用意
+        $st = $this->pdo->prepare('
+        UPDATE user_token
+          SET token = :token, updated_by = :updateUserId, updated_at = now()
+        WHERE
+          user_id = :userId;
+        ');
+
+        // 変数をバインド
+        $appToken = $this->createAppToken($userId, $authToken);
+
+        $st->bindParam(':userId', $userId, $this->pdo::PARAM_STR);
+        $st->bindParam(':token', $appToken, $this->pdo::PARAM_STR);
+        $st->bindParam(':updateUserId', $userId, $this->pdo::PARAM_STR);
+
+        $this->executeSql($st);
+        return $appToken;
     }
 
     /*

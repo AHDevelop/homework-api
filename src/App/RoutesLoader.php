@@ -51,7 +51,7 @@ class RoutesLoader
         // 全ユーザー取得
         $api->get('/users', "users.controller:getAll");
         // key(gmailでuser_masterをチェックし、存在確認する)
-        $api->get('/users/key={key}', "users.controller:getOneByKey");
+        $api->get('/users/key={key}&authToken={authToken}', "users.controller:getOneByKey");
         // IDでユーザーを取得
         $api->get('/users/user_id={id}', "users.controller:getOne");
         // 新規ユーザー登録

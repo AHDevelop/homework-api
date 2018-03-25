@@ -22,9 +22,20 @@ class UsersController extends BaseController
         return $this->returnResult($result, $responce);
     }
 
-    public function getOneByKey($key)
+    /*
+    * GmailIDを元にユーザーを取得する
+    * 取得できた場合にTokenの更新も合わせて行う
+    */
+    public function getOneByKey($key, $authToken)
     {
         $result = $this->usersService->getOneByKey($key, $responce);
+
+        // UPDATE token
+        if(0 < count($result) && $result[0]['user_id'] != undefined){
+          $appToken = $this->usersService->updateUserToken($result[0]['user_id'], $authToken);
+          $result[0]['app_token'] = $appToken;
+        }
+
         return $this->returnResult($result, $responce);
     }
 
@@ -54,7 +65,7 @@ class UsersController extends BaseController
         // ユーザトークン登録
         $appToken = $this->usersService->insertUserToken($user['user_id'], $request ->request->get("auth_token"));
         $user['app_token'] = $appToken;
-        
+
         return $this->returnResult($user, $responce);
     }
 
