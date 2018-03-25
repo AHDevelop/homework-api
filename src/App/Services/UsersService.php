@@ -271,6 +271,29 @@ class UsersService extends BaseService
         return $appToken;
     }
 
+   /*
+    * ユーザトークンチェック
+    */
+    public function checkUserToken($token){
+      // SQLステートメントを用意
+      $st = $this->pdo->prepare('
+        select count(*) from user_token where token = :token;
+      ');
+
+      // 変数をバインド
+      $st->bindParam(':token', $token, $this->pdo::PARAM_STR);
+      $this->executeSql($st);
+
+
+      $count = $st->fetchColumn();
+      $this->monolog->debug("user token count:".$count);
+
+      if ($count == 0) {
+        return false;
+      }
+      return true;
+    }
+
     /*
     * 新規の部屋番号を生成する
     */
