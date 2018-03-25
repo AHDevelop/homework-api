@@ -38,17 +38,41 @@ $app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider
 
 // check auth token
 $app->before(function (Request $request, Application $app) {
+
+  $log = $app['monolog'];
+  $log->addInfo('getPathInfo:'.$request->getPathInfo());
+  $log->addInfo('getMethod:'.$request->getMethod());
+  
+  // result ex) /index.php/api/v1/users
+  $path = $request->getPathInfo();
+  $log->addInfo($path);
+  // result ex) users
+  $apiPath = preg_replace('#/api/v\d/#', '', $path);
+  $apiPaths = explode('/', $apiPath);
+  if ($apiPaths[0] == 'users'){
+    
+    // 新規ユーザ登録時は認証チェックしない（そもそもtokenは登録されていないため）
+    if ($request->getMethod() == 'POST' && count($apiPaths) == 2 && $apiPaths[1] == 'update.json') {
+      $log->addInfo('new users no check');
+      return;
+    }
+    // google再認証後、ユーザチェック時（gmailによるユーザ確認）はチェックしない（tokenを自動的に更新する仕組みのため）
+    if ($request->getMethod() == 'GET' && $request->get('key') != null && $request->get('authToken') != null) {
+      $log->addInfo('update users no check');
+      return;
+    }
+  }
   $token = $request->headers->get('X-HomeWorkToken');
-  $app['monolog']->addInfo("token:".$token);
+  $log->addInfo("token:".$token);
   if ($token == null) {
     $app->abort(401, "auth token error");
   }
 
   $isAuthOk = $app['users.service']->checkUserToken($token);
   if ($isAuthOk) {
-    $app['monolog']->addInfo('auth OK');
+    $log->addInfo('auth OK');
   } else {
-    $app['monolog']->addInfo('auth NG');
+    $log->addInfo('auth NG');
     $app->abort(401, "auth token error");
   }
 }, 100);

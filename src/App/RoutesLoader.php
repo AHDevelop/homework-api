@@ -41,7 +41,7 @@ class RoutesLoader
         * 部屋
         */
         // 部屋一覧取得
-        $api->get('/rooms/user_id={id}', "rooms.controller:getAll");
+        $api->get('/rooms?user_id={id}', "rooms.controller:getAll");
         // 部屋設定更新
         $api->put('room/update.json', "rooms.controller:update");
 
@@ -51,16 +51,16 @@ class RoutesLoader
         // 全ユーザー取得
         $api->get('/users', "users.controller:getAll");
         // key(gmailでuser_masterをチェックし、存在確認する)
-        $api->get('/users/key={key}&authToken={authToken}', "users.controller:getOneByKey");
+        $api->get('/users?key={key}&authToken={authToken}', "users.controller:getOneByKey");
         // IDでユーザーを取得
-        $api->get('/users/user_id={id}', "users.controller:getOne");
+        $api->get('/users?user_id={id}', "users.controller:getOne");
         // 新規ユーザー登録
         $api->post('/users/update.json', "users.controller:insertUser");
         // ユーザー更新
         $api->put('/users/update.json', "users.controller:updateUser");
 
         // 部屋ユーザー一覧取得
-        $api->get('/users/room_id={roomId}', "users.controller:getAllWithRoom");
+        $api->get('/users?room_id={roomId}', "users.controller:getAllWithRoom");
         // 部屋ユーザー追加
         $api->post('/room/users/update.json', "users.controller:insertUserWithRoom");
         // 部屋ユーザー削除
@@ -82,7 +82,7 @@ class RoutesLoader
         * 家事履歴
         */
         // 家事履歴一覧取得
-        $api->get('/homeworkhist/room_id={roomId}', "homeworkHist.controller:getAll");
+        $api->get('/homeworkhist?room_id={roomId}', "homeworkHist.controller:getAll");
         // 家事履歴登録
         $api->post('/homeworkhist/update.json', "homeworkHist.controller:insert");
         // 家事履歴更新
