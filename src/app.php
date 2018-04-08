@@ -42,7 +42,7 @@ $app->before(function (Request $request, Application $app) {
   $log = $app['monolog'];
   $log->addInfo('getPathInfo:'.$request->getPathInfo());
   $log->addInfo('getMethod:'.$request->getMethod());
-  
+
   // result ex) /index.php/api/v1/users
   $path = $request->getPathInfo();
   $log->addInfo($path);
@@ -50,14 +50,15 @@ $app->before(function (Request $request, Application $app) {
   $apiPath = preg_replace('#/api/v\d/#', '', $path);
   $apiPaths = explode('/', $apiPath);
   if ($apiPaths[0] == 'users'){
-    
+
     // 新規ユーザ登録時は認証チェックしない（そもそもtokenは登録されていないため）
     if ($request->getMethod() == 'POST' && count($apiPaths) == 2 && $apiPaths[1] == 'update.json') {
       $log->addInfo('new users no check');
       return;
     }
     // google再認証後、ユーザチェック時（gmailによるユーザ確認）はチェックしない（tokenを自動的に更新する仕組みのため）
-    if ($request->getMethod() == 'GET' && $request->get('key') != null && $request->get('authToken') != null) {
+    $log->addInfo('key'.$request->headers->get('key'));
+    if ($request->getMethod() == 'GET' && $request->headers->get('key') != null && $request->headers->get('authToken') != null) {
       $log->addInfo('update users no check');
       return;
     }
