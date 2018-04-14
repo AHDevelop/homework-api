@@ -27,11 +27,11 @@ $app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider
                array(
                 'pdo.server' => array(
                    'driver'   => 'pgsql',
-                   'user' => "vsdolektutpymq",
-                   'password' => "f2246a9cf404f37ace380e749c3c3dc32eb3a9f9dab619a8e8ef8bb164cd05e8",
-                   'host' => "ec2-23-23-225-12.compute-1.amazonaws.com",
+                   'user' => "ppbprdbespopyj",
+                   'password' => "b36627a1901b0da76f45c9d4de7184bd464ec43bab90d57de2d951b45233378e",
+                   'host' => "ec2-54-235-109-37.compute-1.amazonaws.com",
                    'port' => 5432,
-                   'dbname' => ltrim("dde335i9o6dtl9",'/')
+                   'dbname' => ltrim("dclmcej3udp26l",'/')
                    )
                )
 );
