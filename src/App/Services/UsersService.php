@@ -92,7 +92,7 @@ class UsersService extends BaseService
       );
 
       $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
-      $this->executeSql($st);
+      $st->execute();
 
       $results = array();
       while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {

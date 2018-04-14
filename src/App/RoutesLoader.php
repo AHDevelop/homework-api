@@ -43,17 +43,15 @@ class RoutesLoader
         // 部屋一覧取得
         $api->get('/rooms/user_id={id}', "rooms.controller:getAll");
         // 部屋設定更新
-        $api->put('room/update.json', "rooms.controller:update");
+        $api->put('/room/update.json', "rooms.controller:update");
 
         /*
         * ユーザー
         */
-        // 全ユーザー取得
-        //$api->get('/users', "users.controller:getAll");
         // key(gmailでuser_masterをチェックし、存在確認する)
         $api->get('/users/key={key}&authToken={authToken}', "users.controller:getOneByKey");
         // IDでユーザーを取得
-        $api->get('/users/{id}', "users.controller:getOne");
+        $api->get('/users/user_id={id}', "users.controller:getOne");
         // 新規ユーザー登録
         $api->post('/users/update.json', "users.controller:insertUser");
         // ユーザー更新
@@ -89,7 +87,7 @@ class RoutesLoader
         $api->put('/homeworkhist/update.json', "homeworkHist.controller:update");
         // 家事履歴削除
         $api->delete('/homeworkhist/update.json', "homeworkHist.controller:delete");
-        // ユーザー別家事集計取得
+        // 家事集計取得
         $api->get('/homeworkhist/summary', "homeworkHist.controller:getSummary");
 
         $this->app->mount($this->app["api.endpoint"].'/'.$this->app["api.version"], $api);
