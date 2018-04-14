@@ -16,8 +16,8 @@ use Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider;
 date_default_timezone_set('Asia/Tokyo');
 
 $app->register(new MonologServiceProvider(), array(
-  // 'monolog.logfile' => 'php://stderr',
-  "monolog.logfile" => ROOT_PATH . "/storage/logs/" . Carbon::now('Europe/London')->format("Y-m-d") . ".log",
+  'monolog.logfile' => 'php://stdout',
+  // "monolog.logfile" => ROOT_PATH . "/storage/logs/" . Carbon::now('Europe/London')->format("Y-m-d") . ".log",
   "monolog.level" => "debug",//$app["log.level"],
   "monolog.name" => "application"
 ));
