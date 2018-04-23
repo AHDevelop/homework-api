@@ -42,6 +42,8 @@ class RoutesLoader
         */
         // 部屋一覧取得
         $api->get('/rooms/user_id={id}', "rooms.controller:getAll");
+        // 部屋一覧取得
+        $api->get('/rooms/{roomId}', "rooms.controller:getOne");
         // 部屋設定更新
         $api->put('/room/update.json', "rooms.controller:update");
 

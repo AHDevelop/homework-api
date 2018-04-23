@@ -15,10 +15,12 @@ use Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider;
 
 date_default_timezone_set('Asia/Tokyo');
 
+$MODE = "debug";
+
 $app->register(new MonologServiceProvider(), array(
   'monolog.logfile' => 'php://stdout',
   // "monolog.logfile" => ROOT_PATH . "/storage/logs/" . Carbon::now('Europe/London')->format("Y-m-d") . ".log",
-  "monolog.level" => "debug",//$app["log.level"],
+  "monolog.level" => 'debug',//$app["log.level"],
   "monolog.name" => "application"
 ));
 
@@ -37,46 +39,48 @@ $app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider
 );
 
 // check auth token
-$app->before(function (Request $request, Application $app) {
-
-  $log = $app['monolog'];
-  $log->addInfo('getPathInfo:'.$request->getPathInfo());
-  $log->addInfo('getMethod:'.$request->getMethod());
-
-  // result ex) /index.php/api/v1/users
-  $path = $request->getPathInfo();
-  $log->addInfo($path);
-  // result ex) users
-  $apiPath = preg_replace('#/api/v\d/#', '', $path);
-  $apiPaths = explode('/', $apiPath);
-  if ($apiPaths[0] == 'users'){
-
-    // 新規ユーザ登録時は認証チェックしない（そもそもtokenは登録されていないため）
-    if ($request->getMethod() == 'POST' && count($apiPaths) == 2 && $apiPaths[1] == 'update.json') {
-      $log->addInfo('new users no check');
-      return;
-    }
-    // google再認証後、ユーザチェック時（gmailによるユーザ確認）はチェックしない（tokenを自動的に更新する仕組みのため）
-    $log->addInfo('key'.$request->headers->get('key'));
-    if ($request->getMethod() == 'GET' && $request->headers->get('key') != null && $request->headers->get('authToken') != null) {
-      $log->addInfo('update users no check');
-      return;
-    }
-  }
-  $token = $request->headers->get('X-HomeWorkToken');
-  $log->addInfo("token:".$token);
-  if ($token == null) {
-    $app->abort(401, "auth token error");
-  }
-
-  $isAuthOk = $app['users.service']->checkUserToken($token);
-  if ($isAuthOk) {
-    $log->addInfo('auth OK');
-  } else {
-    $log->addInfo('auth NG');
-    $app->abort(401, "auth token error");
-  }
-}, 100);
+if ($MODE !== 'debug') {
+	$app->before(function (Request $request, Application $app) {
+	
+		$log = $app['monolog'];
+		$log->addInfo('getPathInfo:'.$request->getPathInfo());
+		$log->addInfo('getMethod:'.$request->getMethod());
+	
+		// result ex) /index.php/api/v1/users
+		$path = $request->getPathInfo();
+		$log->addInfo($path);
+		// result ex) users
+		$apiPath = preg_replace('#/api/v\d/#', '', $path);
+		$apiPaths = explode('/', $apiPath);
+		if ($apiPaths[0] == 'users'){
+	
+			// 新規ユーザ登録時は認証チェックしない（そもそもtokenは登録されていないため）
+			if ($request->getMethod() == 'POST' && count($apiPaths) == 2 && $apiPaths[1] == 'update.json') {
+				$log->addInfo('new users no check');
+				return;
+			}
+			// google再認証後、ユーザチェック時（gmailによるユーザ確認）はチェックしない（tokenを自動的に更新する仕組みのため）
+			$log->addInfo('key'.$request->headers->get('key'));
+			if ($request->getMethod() == 'GET' && $request->headers->get('key') != null && $request->headers->get('authToken') != null) {
+				$log->addInfo('update users no check');
+				return;
+			}
+		}
+		$token = $request->headers->get('X-HomeWorkToken');
+		$log->addInfo("token:".$token);
+		if ($token == null) {
+			$app->abort(401, "auth token error");
+		}
+	
+		$isAuthOk = $app['users.service']->checkUserToken($token);
+		if ($isAuthOk) {
+			$log->addInfo('auth OK');
+		} else {
+			$log->addInfo('auth NG');
+			$app->abort(401, "auth token error");
+		}
+	}, 100);
+}
 
 //accepting JSON
 $app->before(function (Request $request) {

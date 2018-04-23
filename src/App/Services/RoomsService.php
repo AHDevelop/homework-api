@@ -5,7 +5,7 @@ namespace App\Services;
 class RoomsService extends BaseService
 {
     /**
-    * 部屋を取得する
+    * 部屋一覧を取得する
     */
     public function getAll($userId, &$responce)
     {
@@ -55,6 +55,38 @@ class RoomsService extends BaseService
     }
 
     /**
+    * 指定された部屋情報を取得する
+    */
+    public function getOne($roomId, &$responce)
+    {
+        $st = $this->pdo->prepare('
+          SELECT
+            room_id, room_name, user_id, room_number
+             FROM
+          room
+          WHERE
+            room_id = :roomId
+          ;
+        ');
+
+        $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+        $st->execute();
+
+        // SQLエラーをログに出力
+        $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+
+        $results = array();
+        while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+          $results[] = $row;
+        }
+        if(count($results) === 0){
+          $responce["message"] = "部屋が存在しません。";
+          return;
+        }
+        return $results;
+    }
+        
+    /**
     * 部屋の設定情報を更新する
     */
     public function update($Param, &$responce)
@@ -63,11 +95,11 @@ class RoomsService extends BaseService
       // SQLステートメントを用意
       $st = $this->pdo->prepare('
         UPDATE
-        	room
+            room
         SET
-        	room_name = :roomName, room_number = :roomNumber, updated_by = :updateUserId, updated_at = now()
+            room_name = :roomName, room_number = :roomNumber, updated_by = :updateUserId, updated_at = now()
         WHERE
-        	room_id = :roomId
+            room_id = :roomId
         ;
       ');
 

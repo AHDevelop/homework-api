@@ -26,6 +26,15 @@ class RoomsController extends BaseController
     }
 
     /*
+    * 部屋取得
+    */
+    public function getOne($roomId)
+    {
+        $result = $this->$roomsService->getOne($roomId, $responce);
+        return $this->returnResult($result, $responce);
+    }
+
+    /*
     * 部屋設定更新
     */
     public function update(Request $request)
