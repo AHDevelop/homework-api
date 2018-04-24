@@ -329,6 +329,31 @@ class UsersService extends BaseService
     }
 
     /*
+    * 指定されたユーザが指定された部屋のOwnerか判定する。
+    */
+    private function isOwner($roomId, $userId){
+
+      $st = $this->pdo->prepare('
+        SELECT
+          count(*)
+        FROM
+          room
+        WHERE
+          room_id = :roomId AND user_id = :userId AND is_deleted = false
+      ');
+
+      // 変数をバインド
+      $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+      $st->bindParam(':userId', $userId, $this->pdo::PARAM_INT);
+
+      $count = $st->fetchColumn();
+      if ($count === 0) {
+        return false;
+      }
+      return true;
+    }
+
+    /*
     * 特定のユーザがすでに部屋ユーザーに登録済みかどうかチェックする
     */
     private function getRoomUser($roomId, $userId){
@@ -429,7 +454,7 @@ class UsersService extends BaseService
       $roomId = $results[0]["room_id"];
       $userId = $Param->request->get("user_id");
 
-      if(0 < count(self::getRoomUser($roomId, $userId))){
+      if(0 < count(self::getRoomUser($roomId, $userId)) || self::isOwner($roomId, $userId)){
         $responce["message"] = "ユーザーは部屋に登録済みです。";
         return;
       }
