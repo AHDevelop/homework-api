@@ -284,9 +284,8 @@ class UsersService extends BaseService
       $st->bindParam(':token', $token, $this->pdo::PARAM_STR);
       $this->executeSql($st);
 
-
       $count = $st->fetchColumn();
-      $this->monolog->debug("user token count:".$count);
+      // $this->monolog->debug("user token count:".$count);
 
       if ($count == 0) {
         return false;
@@ -345,6 +344,7 @@ class UsersService extends BaseService
       // 変数をバインド
       $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
       $st->bindParam(':userId', $userId, $this->pdo::PARAM_INT);
+      $this->executeSql($st);
 
       $count = $st->fetchColumn();
       if ($count === 0) {
@@ -410,7 +410,7 @@ class UsersService extends BaseService
       $result["user_id"] = $userId;
       $result["user_name"] = $userName;
 
-      $responce["message"] = "ユーザー情報を更新しました。";
+      $responce["message"] = "更新しました。";
 
       return $result;
     }
@@ -453,6 +453,9 @@ class UsersService extends BaseService
 
       $roomId = $results[0]["room_id"];
       $userId = $Param->request->get("user_id");
+
+      // $this->monolog->debug("room id is:".$roomId);
+      // $this->monolog->debug("user id is:".$userId);
 
       if(0 < count(self::getRoomUser($roomId, $userId)) || self::isOwner($roomId, $userId)){
         $responce["message"] = "ユーザーは部屋に登録済みです。";
