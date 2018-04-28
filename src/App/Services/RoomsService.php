@@ -34,7 +34,7 @@ class RoomsService extends BaseService
                     FROM
                       room_user ru
                     WHERE
-                      user_id = :userId AND ru.room_id = r.room_id
+                      user_id = :userId AND ru.room_id = r.room_id AND ru.is_deleted = false
                   )
               AND user_id != :userId AND r.is_deleted = false
             ) list;
@@ -85,7 +85,7 @@ class RoomsService extends BaseService
         }
         return $results;
     }
-        
+
     /**
     * 部屋の設定情報を更新する
     */
