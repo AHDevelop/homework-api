@@ -41,11 +41,11 @@ $app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider
 // check auth token
 if ($MODE !== 'debug') {
 	$app->before(function (Request $request, Application $app) {
-	
+
 		$log = $app['monolog'];
 		$log->addInfo('getPathInfo:'.$request->getPathInfo());
 		$log->addInfo('getMethod:'.$request->getMethod());
-	
+
 		// result ex) /index.php/api/v1/users
 		$path = $request->getPathInfo();
 		$log->addInfo($path);
@@ -53,7 +53,7 @@ if ($MODE !== 'debug') {
 		$apiPath = preg_replace('#/api/v\d/#', '', $path);
 		$apiPaths = explode('/', $apiPath);
 		if ($apiPaths[0] == 'users'){
-	
+
 			// 新規ユーザ登録時は認証チェックしない（そもそもtokenは登録されていないため）
 			if ($request->getMethod() == 'POST' && count($apiPaths) == 2 && $apiPaths[1] == 'update.json') {
 				$log->addInfo('new users no check');
@@ -71,7 +71,7 @@ if ($MODE !== 'debug') {
 		if ($token == null) {
 			$app->abort(401, "auth token error");
 		}
-	
+
 		$isAuthOk = $app['users.service']->checkUserToken($token);
 		if ($isAuthOk) {
 			$log->addInfo('auth OK');

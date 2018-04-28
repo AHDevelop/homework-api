@@ -81,7 +81,7 @@ class HomeworkHistService extends BaseService
           $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
         }
 
-        $responce["message"] = "家事履歴を登録しました。";
+        $responce["message"] = "登録しました。";
         return;
     }
 
@@ -121,7 +121,7 @@ class HomeworkHistService extends BaseService
           $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
         }
 
-        $responce["message"] = "家事履歴を更新しました。";
+        $responce["message"] = "更新しました。";
         return;
     }
 
@@ -159,7 +159,7 @@ class HomeworkHistService extends BaseService
           $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
         }
 
-        $responce["message"] = "家事履歴を削除しました。";
+        $responce["message"] = "削除しました。";
         return;
     }
 
@@ -245,7 +245,7 @@ class HomeworkHistService extends BaseService
       while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
         $results[] = $row;
       }
-      
+
       return $results;
     }
 }

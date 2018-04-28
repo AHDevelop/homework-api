@@ -137,7 +137,7 @@ class RoomHomeworkService extends BaseService
           $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
         }
 
-        $responce["message"] = "家事履歴を更新しました。";
+        $responce["message"] = "更新しました。";
 
         return;
     }
@@ -176,7 +176,7 @@ class RoomHomeworkService extends BaseService
           $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
         }
 
-        $responce["message"] = "家事履歴を削除しました。";
+        $responce["message"] = "削除しました。";
 
         return;
     }
