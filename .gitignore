@@ -3,3 +3,4 @@ vendor/
 .env
 _mdwriter.cson
 composer.phar
+web/
