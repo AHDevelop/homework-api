@@ -24,7 +24,7 @@ $app->register(new MonologServiceProvider(), array(
   "monolog.name" => "application"
 ));
 
-$serverName = $_SERVER['SERVER_NAME'];
+$serverName = gethostname();
 $log = $app['monolog'];
 $log->addInfo('$serverName:'. $serverName);
 
