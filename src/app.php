@@ -19,9 +19,9 @@ date_default_timezone_set('Asia/Tokyo');
 $MODE = "debug"; // "debug" "Production"
 
 $monologSetting = array(
-  'monolog.logfile' => 'php://stdout',
+  // 'monolog.logfile' => 'php://stdout',
   // ローカル環境用
-  // "monolog.logfile" => ROOT_PATH . "/storage/logs/" . Carbon::now('Europe/London')->format("Y-m-d") . ".log",
+  "monolog.logfile" => ROOT_PATH . "/storage/logs/" . Carbon::now('Europe/London')->format("Y-m-d") . ".log",
   "monolog.level" => 'WARNING',
   "monolog.name" => "application"
 );
@@ -42,14 +42,14 @@ $DB_CONN = array(
       'port' => 5432,
       'dbname' => ltrim("d188t54hklh0e5",'/')
       )
-)
+);
 
 if ($MODE === 'debug') {
   $DB_CONN['pdo.server']['user'] = "ppbprdbespopyj";
   $DB_CONN['pdo.server']['password'] = "b36627a1901b0da76f45c9d4de7184bd464ec43bab90d57de2d951b45233378e";
   $DB_CONN['pdo.server']['host'] = "ec2-54-235-109-37.compute-1.amazonaws.com";
   $DB_CONN['pdo.server']['dbname'] = ltrim("dclmcej3udp26l",'/');
-}
+};
 
 // Heroku DBへの参照
 $app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider('pdo'), $DB_CONN);
