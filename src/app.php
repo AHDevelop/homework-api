@@ -15,32 +15,44 @@ use Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider;
 
 date_default_timezone_set('Asia/Tokyo');
 
-$MODE = "debug";
+// 動作モード
+$MODE = "debug"; // "debug" "Production"
 
-$app->register(new MonologServiceProvider(), array(
+$monologSetting = array(
   'monolog.logfile' => 'php://stdout',
+  // ローカル環境用
   // "monolog.logfile" => ROOT_PATH . "/storage/logs/" . Carbon::now('Europe/London')->format("Y-m-d") . ".log",
-  "monolog.level" => 'debug',//$app["log.level"],
+  "monolog.level" => 'WARNING',
   "monolog.name" => "application"
-));
+);
 
-$serverName = $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];;
-$log = $app['monolog'];
-$log->addInfo('$serverName:'. $serverName);
+if($MODE === "debug"){
+  $monologSetting["monolog.level"] = "DEBUG";
+}
+
+$app->register(new MonologServiceProvider(), $monologSetting);
+
+// Production
+$DB_CONN = array(
+    'pdo.server' => array(
+      'driver'   => 'pgsql',
+      'user' => "cmpmsbirdyehfw",
+      'password' => "3f9362b93dc525450c3a635175a1884618e05f73a4431cab0cc5b9237bd855a9",
+      'host' => "ec2-54-243-54-6.compute-1.amazonaws.com",
+      'port' => 5432,
+      'dbname' => ltrim("d188t54hklh0e5",'/')
+      )
+)
+
+if ($MODE === 'debug') {
+  $DB_CONN['pdo.server']['user'] = "ppbprdbespopyj";
+  $DB_CONN['pdo.server']['password'] = "b36627a1901b0da76f45c9d4de7184bd464ec43bab90d57de2d951b45233378e";
+  $DB_CONN['pdo.server']['host'] = "ec2-54-235-109-37.compute-1.amazonaws.com";
+  $DB_CONN['pdo.server']['dbname'] = ltrim("dclmcej3udp26l",'/');
+}
 
 // Heroku DBへの参照
-$app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider('pdo'),
-               array(
-                'pdo.server' => array(
-                   'driver'   => 'pgsql',
-                   'user' => "ppbprdbespopyj",
-                   'password' => "b36627a1901b0da76f45c9d4de7184bd464ec43bab90d57de2d951b45233378e",
-                   'host' => "ec2-54-235-109-37.compute-1.amazonaws.com",
-                   'port' => 5432,
-                   'dbname' => ltrim("dclmcej3udp26l",'/')
-                   )
-               )
-);
+$app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider('pdo'), $DB_CONN);
 
 // check auth token
 if ($MODE !== 'debug') {
