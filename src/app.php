@@ -15,28 +15,11 @@ use Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider;
 
 date_default_timezone_set('Asia/Tokyo');
 
-$MODE = "debug";
-
-$app->register(new MonologServiceProvider(), array(
-  'monolog.logfile' => 'php://stdout',
-  // "monolog.logfile" => ROOT_PATH . "/storage/logs/" . Carbon::now('Europe/London')->format("Y-m-d") . ".log",
-  "monolog.level" => 'debug',//$app["log.level"],
-  "monolog.name" => "application"
-));
+// ログ設定
+$app->register(new MonologServiceProvider(), $MONOLOG_SETTING);
 
 // Heroku DBへの参照
-$app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider('pdo'),
-               array(
-                'pdo.server' => array(
-                   'driver'   => 'pgsql',
-                   'user' => "ppbprdbespopyj",
-                   'password' => "b36627a1901b0da76f45c9d4de7184bd464ec43bab90d57de2d951b45233378e",
-                   'host' => "ec2-54-235-109-37.compute-1.amazonaws.com",
-                   'port' => 5432,
-                   'dbname' => ltrim("dclmcej3udp26l",'/')
-                   )
-               )
-);
+$app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider('pdo'), $DB_CONN);
 
 // check auth token
 if ($MODE !== 'debug') {
@@ -93,10 +76,6 @@ $app->before(function (Request $request) {
 $app->register(new \Euskadi31\Silex\Provider\CorsServiceProvider);
 
 $app->register(new ServiceControllerServiceProvider());
-
-// $app->register(new DoctrineServiceProvider(), array(
-//   "db.options" => $app["db.options"]
-// ));
 
 $app->register(new HttpCacheServiceProvider(), array("http_cache.cache_dir" => ROOT_PATH . "/storage/cache",));
 
