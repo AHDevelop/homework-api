@@ -20,42 +20,27 @@ $MODE = "debug";
 $app->register(new MonologServiceProvider(), array(
   'monolog.logfile' => 'php://stdout',
   // "monolog.logfile" => ROOT_PATH . "/storage/logs/" . Carbon::now('Europe/London')->format("Y-m-d") . ".log",
-  "monolog.level" => $MODE, //$app["log.level"],
+  "monolog.level" => 'debug',//$app["log.level"],
   "monolog.name" => "application"
 ));
 
-// Choice DB connection
-if ($MODE !== 'debug') {
-  // Heroku DBへの参照
-  $app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider('pdo'),
-                 array(
-                  'pdo.server' => array(
-                     // Develop
-                     'driver'   => 'pgsql',
-                     'user' => "ppbprdbespopyj",
-                     'password' => "b36627a1901b0da76f45c9d4de7184bd464ec43bab90d57de2d951b45233378e",
-                     'host' => "ec2-54-235-109-37.compute-1.amazonaws.com",
-                     'port' => 5432,
-                     'dbname' => ltrim("dclmcej3udp26l",'/')
-                     )
-                 )
-  );
-} else {
-  // Heroku DBへの参照
-  $app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider('pdo'),
-                 array(
-                  'pdo.server' => array(
-                    // Product
-                     'driver'   => 'pgsql',
-                     'user' => "cmpmsbirdyehfw",
-                     'password' => "3f9362b93dc525450c3a635175a1884618e05f73a4431cab0cc5b9237bd855a9",
-                     'host' => "ec2-54-243-54-6.compute-1.amazonaws.com",
-                     'port' => 5432,
-                     'dbname' => ltrim("d188t54hklh0e5",'/')
-                     )
-                 )
-  );
-}
+$serverName = $_SERVER['SERVER_NAME'];
+$log = $app['monolog'];
+$log->addInfo('$serverName:'. $serverName);
+
+// Heroku DBへの参照
+$app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider('pdo'),
+               array(
+                'pdo.server' => array(
+                   'driver'   => 'pgsql',
+                   'user' => "ppbprdbespopyj",
+                   'password' => "b36627a1901b0da76f45c9d4de7184bd464ec43bab90d57de2d951b45233378e",
+                   'host' => "ec2-54-235-109-37.compute-1.amazonaws.com",
+                   'port' => 5432,
+                   'dbname' => ltrim("dclmcej3udp26l",'/')
+                   )
+               )
+);
 
 // check auth token
 if ($MODE !== 'debug') {
@@ -112,6 +97,10 @@ $app->before(function (Request $request) {
 $app->register(new \Euskadi31\Silex\Provider\CorsServiceProvider);
 
 $app->register(new ServiceControllerServiceProvider());
+
+// $app->register(new DoctrineServiceProvider(), array(
+//   "db.options" => $app["db.options"]
+// ));
 
 $app->register(new HttpCacheServiceProvider(), array("http_cache.cache_dir" => ROOT_PATH . "/storage/cache",));
 
