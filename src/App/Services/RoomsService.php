@@ -59,26 +59,8 @@ class RoomsService extends BaseService
     */
     public function getOne($roomId, &$responce)
     {
-        $st = $this->pdo->prepare('
-          SELECT
-            room_id, room_name, user_id, room_number
-             FROM
-          room
-          WHERE
-            room_id = :roomId
-          ;
-        ');
+        $results = self::getOneRoom($roomId);
 
-        $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
-        $st->execute();
-
-        // SQLエラーをログに出力
-        $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
-
-        $results = array();
-        while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
-          $results[] = $row;
-        }
         if(count($results) === 0){
           $responce["message"] = "部屋が存在しません。";
           return;
@@ -86,11 +68,54 @@ class RoomsService extends BaseService
         return $results;
     }
 
+    /*
+    * 部屋情報を一件取得するSQL処理のみ
+    */
+    private function getOneRoom($roomId){
+
+      $st = $this->pdo->prepare('
+        SELECT
+          room_id, room_name, user_id, room_number
+           FROM
+        room
+        WHERE
+          room_id = :roomId
+        ;
+      ');
+
+      $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+      $st->execute();
+
+      // SQLエラーをログに出力
+      $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+
+      $results = array();
+      while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+        $results[] = $row;
+      }
+
+      return $results;
+    }
+
     /**
     * 部屋の設定情報を更新する
     */
     public function update($Param, &$responce)
     {
+      // 変数に実数を設定
+      $roomId = $Param->request->get("room_id");
+      $roomName = $Param->request->get("room_name");
+      $roomNumber = $Param->request->get("room_number");
+      $updateUserId = $Param->request->get("user_id");
+
+      // TTODO　同じ部屋名と部屋番号がすでに使用済みでないか確認する
+      if(0 < count(self::isExistSameRoomName($roomName, $roomNumber))){
+
+        $results = self::getOneRoom($roomId);
+        $responce["message"] = "設定を更新できませんでした";
+        return $results;
+      }
+      // 使用済みの場合に更新不可にする
 
       // SQLステートメントを用意
       $st = $this->pdo->prepare('
@@ -109,12 +134,6 @@ class RoomsService extends BaseService
       $st->bindParam(':roomNumber', $roomNumber, $this->pdo::PARAM_STR);
       $st->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
 
-      // 変数に実数を設定
-      $roomId = $Param->request->get("room_id");
-      $roomName = $Param->request->get("room_name");
-      $roomNumber = $Param->request->get("room_number");
-      $updateUserId = $Param->request->get("user_id");
-
       $st->execute();
       // SQLの実行結果を出力
       $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
@@ -126,6 +145,34 @@ class RoomsService extends BaseService
       $responce["message"] = "設定を更新しました。";
 
       // 更新した部屋情報を返却する
+      return $results;
+    }
+
+    /*
+    * 渡された部屋名と部屋番号の組み合わせがすでに存在するかチェックする
+    */
+    private function isExistSameRoomName($roomName, $roomNumber){
+
+      $st = $this->pdo->prepare('
+        SELECT
+          room.*
+        FROM
+          room
+        WHERE
+          room_name = :roomName AND room_number = :roomNumber AND is_deleted = false
+      ');
+
+      // 変数をバインド
+      $st->bindParam(':roomName', $roomName, $this->pdo::PARAM_STR);
+      $st->bindParam(':roomNumber', $roomNumber, $this->pdo::PARAM_STR);
+
+      $this->executeSql($st);
+
+      $results = array();
+      while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+        $results[] = $row;
+      }
+
       return $results;
     }
 }
