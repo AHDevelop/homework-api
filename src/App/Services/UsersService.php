@@ -498,7 +498,7 @@ class UsersService extends BaseService
           UPDATE room_user
             SET is_deleted = false, updated_by = :updateUserId, updated_at = now()
           WHERE
-            room_id = :roomId AND userId = :userId;
+            room_id = :roomId AND user_id = :userId;
         ');
 
         // 変数をバインド
