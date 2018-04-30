@@ -111,8 +111,14 @@ class RoomsService extends BaseService
       // TTODO　同じ部屋名と部屋番号がすでに使用済みでないか確認する
       if(0 < count(self::isExistSameRoomName($roomName, $roomNumber))){
 
-        $results = self::getOneRoom($roomId);
+        $roomInfoArr = self::getOneRoom($roomId);
+
+        $results[room_id] = $roomInfoArr[0]["room_id"];
+        $results[room_name] = $roomInfoArr[0]["room_name"];
+        $results[room_number] = $roomInfoArr[0]["room_number"];
+
         $responce["message"] = "設定を更新できませんでした";
+
         return $results;
       }
       // 使用済みの場合に更新不可にする
