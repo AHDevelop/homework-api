@@ -18,6 +18,10 @@ date_default_timezone_set('Asia/Tokyo');
 // ログ設定
 $app->register(new MonologServiceProvider(), $MONOLOG_SETTING);
 
+$log = $app['monolog'];
+$log->addInfo('HTTP_HOST:'. $_SERVER['HTTP_HOST']);
+$log->addInfo('SERVER_NAME:'. $_SERVER['SERVER_NAME']);
+
 // Heroku DBへの参照
 $app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider('pdo'), $DB_CONN);
 
