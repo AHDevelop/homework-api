@@ -109,7 +109,7 @@ class RoomsService extends BaseService
       $updateUserId = $Param->request->get("user_id");
 
       // TTODO　同じ部屋名と部屋番号がすでに使用済みでないか確認する
-      if(0 < count(self::isExistSameRoomName($roomName, $roomNumber))){
+      if(0 < count(self::isExistSameRoomName($roomId, $roomName, $roomNumber))){
 
         $roomInfoArr = self::getOneRoom($roomId);
 
@@ -157,7 +157,7 @@ class RoomsService extends BaseService
     /*
     * 渡された部屋名と部屋番号の組み合わせがすでに存在するかチェックする
     */
-    private function isExistSameRoomName($roomName, $roomNumber){
+    private function isExistSameRoomName($roomId ,$roomName, $roomNumber){
 
       $st = $this->pdo->prepare('
         SELECT
@@ -165,10 +165,11 @@ class RoomsService extends BaseService
         FROM
           room
         WHERE
-          room_name = :roomName AND room_number = :roomNumber AND is_deleted = false
+          room_name = :roomName AND room_number = :roomNumber AND is_deleted = false AND room_id != $roomId
       ');
 
       // 変数をバインド
+      $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
       $st->bindParam(':roomName', $roomName, $this->pdo::PARAM_STR);
       $st->bindParam(':roomNumber', $roomNumber, $this->pdo::PARAM_STR);
 
