@@ -382,6 +382,34 @@ class UsersService extends BaseService
     }
 
     /*
+    * 特定のユーザが過去に部屋ユーザーに登録済みだったかどうかチェックする
+    */
+    private function getRoomUserIncludeDeleted($roomId, $userId){
+
+      $st = $this->pdo->prepare('
+        SELECT
+          room_user.*
+        FROM
+          room_user
+        WHERE
+          room_id = :roomId AND user_id = :userId AND is_deleted = ture
+      ');
+
+      // 変数をバインド
+      $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+      $st->bindParam(':userId', $userId, $this->pdo::PARAM_INT);
+
+      $this->executeSql($st);
+
+      $results = array();
+      while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+        $results[] = $row;
+      }
+
+      return $results;
+    }
+
+    /*
     * ユーザー更新
     */
     public function updateUser($Param, &$responce)
@@ -462,25 +490,52 @@ class UsersService extends BaseService
         return;
       }
 
-      // SQLステートメントを用意
-      $st2 = $this->pdo->prepare('
-        INSERT INTO room_user
-          (room_id, user_id, is_deleted, created_by, created_at, updated_by, updated_at)
-        VALUES
-          (:roomId, :userId, false, :updateUserId, now(), :updateUserId, now());
-      ');
+      //　ユーザーが過去に部屋に登録されていたか
+      if(0 < count(self::getRoomUserIncludeDeleted($roomId, $userId))){
+        // 登録あり→　update
+        // SQLステートメントを用意          
+        $st2 = $this->pdo->prepare('
+          UPDATE room_user
+            SET is_deleted = false, updated_by = :updateUserId, updated_at = now()
+          WHERE
+            room_id = :roomId AND userId = :userId;
+        ');
 
-      // 変数をバインド
-      $st2->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
-      $st2->bindParam(':userId', $userId, $this->pdo::PARAM_INT);
-      $st2->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
+        // 変数をバインド
+        $st2->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+        $st2->bindParam(':userId', $userId, $this->pdo::PARAM_INT);
+        $st2->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
 
-      // 変数に実数を設定
-      $roomId = $results[0]["room_id"];
-      $userId = $Param->request->get("user_id");
-      $updateUserId = "system";
+        // 変数に実数を設定
+        $roomId = $results[0]["room_id"];
+        $userId = $Param->request->get("user_id");
+        $updateUserId = "system";
 
-      $this->executeSql($st2);
+        $this->executeSql($st2);
+
+      } else {
+        // 登録なし→　insert
+
+        // SQLステートメントを用意
+        $st2 = $this->pdo->prepare('
+          INSERT INTO room_user
+            (room_id, user_id, is_deleted, created_by, created_at, updated_by, updated_at)
+          VALUES
+            (:roomId, :userId, false, :updateUserId, now(), :updateUserId, now());
+        ');
+
+        // 変数をバインド
+        $st2->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+        $st2->bindParam(':userId', $userId, $this->pdo::PARAM_INT);
+        $st2->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
+
+        // 変数に実数を設定
+        $roomId = $results[0]["room_id"];
+        $userId = $Param->request->get("user_id");
+        $updateUserId = "system";
+
+        $this->executeSql($st2);
+      }
 
       $responce["message"] = "部屋を追加しました。";
 
