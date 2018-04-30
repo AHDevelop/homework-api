@@ -165,7 +165,7 @@ class RoomsService extends BaseService
         FROM
           room
         WHERE
-          room_name = :roomName AND room_number = :roomNumber AND is_deleted = false AND room_id != $roomId
+          room_name = :roomName AND room_number = :roomNumber AND is_deleted = false AND room_id != :roomId
       ');
 
       // 変数をバインド
