@@ -108,7 +108,7 @@ class RoomsService extends BaseService
       $roomNumber = $Param->request->get("room_number");
       $updateUserId = $Param->request->get("user_id");
 
-      // TTODO　同じ部屋名と部屋番号がすでに使用済みでないか確認する
+      // 同じ部屋名と部屋番号がすでに使用済みでないか確認する
       if(0 < count(self::isExistSameRoomName($roomId, $roomName, $roomNumber))){
 
         $roomInfoArr = self::getOneRoom($roomId);
