@@ -11,7 +11,8 @@ if($HTTP_HOST === "dev-homework-api.herokuapp.com"){
   require __DIR__ . '/../resources/config/dev.php';
 } else if($HTTP_HOST === "homework-api.herokuapp.com"){
   require __DIR__ . '/../resources/config/prod.php';
-} else {  
+} else {
+  require __DIR__ . '/../resources/config/dev.php';
 }
 
 require __DIR__ . '/../src/app.php';
