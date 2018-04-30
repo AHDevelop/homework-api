@@ -392,7 +392,7 @@ class UsersService extends BaseService
         FROM
           room_user
         WHERE
-          room_id = :roomId AND user_id = :userId AND is_deleted = ture
+          room_id = :roomId AND user_id = :userId AND is_deleted = true
       ');
 
       // 変数をバインド
@@ -493,7 +493,7 @@ class UsersService extends BaseService
       //　ユーザーが過去に部屋に登録されていたか
       if(0 < count(self::getRoomUserIncludeDeleted($roomId, $userId))){
         // 登録あり→　update
-        // SQLステートメントを用意          
+        // SQLステートメントを用意
         $st2 = $this->pdo->prepare('
           UPDATE room_user
             SET is_deleted = false, updated_by = :updateUserId, updated_at = now()
