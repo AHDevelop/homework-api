@@ -77,8 +77,6 @@ class RoutesLoader
         $api->put('/room/homework/update.json', "roomHomework.controller:update");
         // 部屋別家事削除
         $api->delete('/room/homework/update.json', "roomHomework.controller:delete");
-        // 部屋別家事一括削除
-        $api->delete('/room/homework/bulk/update.json', "roomHomework.controller:bulkDelete");
 
         /*
         * 家事履歴
@@ -93,6 +91,8 @@ class RoutesLoader
         $api->delete('/homeworkhist/update.json', "homeworkHist.controller:delete");
         // 家事集計取得
         $api->get('/homeworkhist/summary', "homeworkHist.controller:getSummary");
+        // 部屋別家事一括削除
+        $api->delete('/homeworkhist/bulk/update.json', "roomHomework.controller:bulkDelete");
 
         $this->app->mount($this->app["api.endpoint"].'/'.$this->app["api.version"], $api);
       }
