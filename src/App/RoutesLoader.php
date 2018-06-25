@@ -92,7 +92,7 @@ class RoutesLoader
         // 家事集計取得
         $api->get('/homeworkhist/summary', "homeworkHist.controller:getSummary");
         // 部屋別家事一括削除
-        $api->delete('/homeworkhist/bulk/update.json', "roomHomework.controller:bulkDelete");
+        $api->delete('/homeworkhist/bulk/update.json', "homeworkHist.controller:bulkDelete");
 
         $this->app->mount($this->app["api.endpoint"].'/'.$this->app["api.version"], $api);
       }
