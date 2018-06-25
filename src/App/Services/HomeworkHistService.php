@@ -163,6 +163,51 @@ class HomeworkHistService extends BaseService
         return;
     }
 
+    /*
+    * 家事履歴一括削除
+    */
+    public function bulkDelete($Param, &$responce)
+    {
+        // パラメータの取得
+        $roomHomeWorkId = $Param->request->get("room_home_work_id");
+        $roomId = $Param->request->get("room_id");
+        $deleteDate = $Param->request->get("delete_date");
+        $updateUserId = $Param->request->get("user_id");
+
+        // パラメータが無いとデータを大量に消してしまうのでチェック処理を実施
+        if($homeworkId == "" || $roomId == "" || $deleteDate == ""){
+          $this->monolog->error("[家事履歴一括削除]必須パラメータが不足しています。");
+          return;
+        }
+
+        // SQLステートメントを用意
+        $st = $this->pdo->prepare('
+          UPDATE
+            home_work_hist
+          SET
+            is_deleted = true, updated_by = :updateUserId, updated_at = now()
+          WHERE
+            room_id = :roomId AND
+            room_home_work_id = :roomHomeWorkId AND
+            home_work_date = :deleteDate;
+        ');
+
+        // 変数をバインド
+        $st->bindParam(':roomHomeWorkId', $roomHomeWorkId, $this->pdo::PARAM_INT);
+        $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+        $st->bindParam(':deleteDate', $deleteDate, $this->pdo::PARAM_STR);
+        $st->bindParam(':updateUserId', $updateUserId, $this->pdo::PARAM_STR);
+
+        // SQLを実行
+        $st->execute();
+
+        // SQLの実行結果を出力
+        $this->monolog->debug(sprintf("SQL log is '%s'  "), $st->errorInfo());
+
+        $responce["message"] = "削除しました。";
+        return;
+    }
+
     /**
     * 部屋に紐づくユーザ毎の家事時間一覧を取得
     */
