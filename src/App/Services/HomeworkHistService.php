@@ -175,7 +175,7 @@ class HomeworkHistService extends BaseService
         $updateUserId = $Param->request->get("user_id");
 
         // パラメータが無いとデータを大量に消してしまうのでチェック処理を実施
-        if($homeworkId == "" || $roomId == "" || $deleteDate == ""){
+        if($roomHomeWorkId == "" || $roomId == "" || $deleteDate == ""){
           $this->monolog->error("[家事履歴一括削除]必須パラメータが不足しています。");
           return;
         }
