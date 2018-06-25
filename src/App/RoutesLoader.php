@@ -77,6 +77,8 @@ class RoutesLoader
         $api->put('/room/homework/update.json', "roomHomework.controller:update");
         // 部屋別家事削除
         $api->delete('/room/homework/update.json', "roomHomework.controller:delete");
+        // 部屋別家事一括削除
+        $api->delete('/room/homework/bulk/update.json', "roomHomework.controller:bulkDelete");
 
         /*
         * 家事履歴

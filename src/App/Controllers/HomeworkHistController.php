@@ -53,6 +53,15 @@ class HomeworkHistController extends BaseController
     }
 
     /*
+    * 家事履歴一括削除
+    */
+    public function bulkDelete(Request $request){
+
+        $result = $this->homeworkHistService->bulkDelete($request, $responce);
+        return $this->returnResult($result, $responce);
+    }
+
+    /*
     * ユーザー別家事集計取得
     */
     public function getSummary(Request $request)
