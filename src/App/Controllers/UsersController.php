@@ -119,14 +119,14 @@ class UsersController extends BaseController
         return $this->returnResult($result, $responce);
     }
 
-    // /*
-    // * 招待_部屋ユーザー追加
-    // */
-    // public function insertUserWithInviteRoom(Request $request)
-    // {
-    //     $result = $this->usersService->insertUserWithInviteRoom($request, $responce);
-    //     return $this->returnResult($result, $responce);
-    // }
+    /*
+    * 招待_部屋ユーザー追加
+    */
+    public function insertUserWithInviteRoom(Request $request)
+    {
+        $result = $this->usersService->insertUserWithInviteRoom($request, $responce);
+        return $this->returnResult($result, $responce);
+    }
 
     /*
     * 部屋ユーザー削除

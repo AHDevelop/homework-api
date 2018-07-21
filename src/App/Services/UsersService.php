@@ -632,11 +632,28 @@ class UsersService extends BaseService
     /*
     * 招待_部屋ユーザー追加
     */
-    public function insertUserWithInviteRoom($roomId, &$responce)
+    public function insertUserWithInviteRoom($Param, &$responce)
     {
       // 招待情報チェック
+      $inviteFromUserId = $Param->request->get("invite_from_user_id");
       $inviteToUserId = $Param->request->get("invite_to_user_id");
       $inviteRoomId = $Param->request->get("invite_room_id");
+
+      // 招待情報のチェック 一か月以内の招待情報を検索して対象をチェックする
+      $st = $this->pdo->prepare("SELECT count(*) FROM invite_hist where room_id = :roomId and user_id = :userId and invite_date < current_timestamp + '+30 days'");
+
+      // 変数をバインド
+      $st->bindParam(':roomId', $inviteRoomId, $this->pdo::PARAM_INT);
+      $st->bindParam(':userId', $inviteFromUserId, $this->pdo::PARAM_INT);
+
+      $this->executeSql($st);
+      $count = $st->fetchColumn();
+      // $this->monolog->debug("count:".$count);
+
+      if($count == 0){
+        $responce["message"] = "招待情報が有効期間を過ぎています。再度招待情報を送ってもらってください。";
+        return;
+      }
 
       // 部屋に追加済みでないか確認
       if(0 < count(self::getRoomUser($inviteRoomId, $inviteToUserId)) || self::isOwner($inviteRoomId, $inviteToUserId)){
@@ -644,8 +661,9 @@ class UsersService extends BaseService
         return;
       }
 
+      // TODO:SHA512パラメータでチェックする
+
       // 部屋に追加
-      // SQLステートメントを用意
       $st2 = $this->pdo->prepare('
         INSERT INTO room_user
           (room_id, user_id, is_deleted, created_by, created_at, updated_by, updated_at)
@@ -653,21 +671,35 @@ class UsersService extends BaseService
           (:roomId, :userId, false, :updateUserId, now(), :updateUserId, now());
       ');
 
-      // 変数をバインド
       $st2->bindParam(':roomId', $inviteRoomId, $this->pdo::PARAM_INT);
       $st2->bindParam(':userId', $inviteToUserId, $this->pdo::PARAM_INT);
       $st2->bindParam(':updateUserId', $inviteToUserId, $this->pdo::PARAM_STR);
 
-      // 変数に実数を設定
-      $roomId = $results[0]["room_id"];
-      $userId = $Param->request->get("user_id");
-      $updateUserId = "system";
-
+      $roomId = $inviteRoomId;
+      $userId = $inviteToUserId;
+      $updateUserId = $inviteFromUserId;
       $this->executeSql($st2);
 
       // 追加された部屋情報を返却する
+      $st3 = $this->pdo->prepare('
+          SELECT
+            room_id, room_name, user_id, room_number
+          FROM
+            room
+          WHERE
+            room_id = :roomId AND is_deleted = false
+          ;'
+      );
 
-      return $roomId;
+      $st3->bindParam(':roomId', $inviteRoomId, $this->pdo::PARAM_INT);
+      $this->executeSql($st3);
+
+      $results = array();
+      while ($row = $st3->fetch($this->pdo::FETCH_ASSOC)) {
+        $results[] = $row;
+      }
+
+      return $results;
     }
 
     /**

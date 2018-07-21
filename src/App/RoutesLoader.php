@@ -70,7 +70,7 @@ class RoutesLoader
         // 部屋ユーザー追加
         $api->post('/room/users/update.json', "users.controller:insertUserWithRoom");
         // 招待ユーザーの部屋への追加処理
-        // $api->post('/room/users/invite/update.json', "users.controller:insertUserWithInviteRoom");
+        $api->post('/room/users/invite/update.json', "users.controller:insertUserWithInviteRoom");
         // 部屋ユーザー削除
         $api->delete('/room/users/update.json', "users.controller:deleteUserWithRoom");
 
