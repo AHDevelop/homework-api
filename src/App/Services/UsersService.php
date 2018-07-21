@@ -124,26 +124,30 @@ class UsersService extends BaseService
     /*
     * 新規ユーザー登録
     */
-    // public function insertUser($Param, &$responce)
-    // {
-    //
-    //   // ユーザーマスタに登録
-    //   $results = $this->registerUserMaster($Param);
-    //
-    //   // 部屋の新規作成
-    //   $this->registerRoom($Param, $results);
-    //
-    //   // 家事マスタをすべて取得
-    //   $homeworkMasterList = $this->getAllHomeworkMaster();
-    //
-    //   // 部屋家事の登録
-    //   $this->registerRoomHomework($Param, $results);
-    //
-    //   // 登録したユーザ情報を返却するためにSelect
-    //   $newinfo = $this->selectNewUser($userId);
-    //
-    //   return $newinfo;
-    // }
+    public function insertUser($Param, &$responce)
+    {
+      // ユーザーマスタに登録
+      $results = $this->registerUserMaster($Param);
+
+      // 部屋の新規作成
+      $roomInfo = $this->registerRoom($Param, $results["userName"], $results);
+
+      // 家事マスタをすべて取得
+      $homeworkMasterList = $this->getAllHomeworkMaster();
+
+      // 部屋家事の登録
+      $this->registerRoomHomework($Param, $results);
+
+      // 登録したユーザ情報を返却するためにSelect
+      $newinfo = $this->selectNewUser($results["userId"]);
+
+      // ユーザー情報以外の付帯情報を追加
+      $newinfo['room_id'] = $roomInfo["roomId"];
+      $newinfo['room_number'] = $roomInfo["roomNumber"];
+      $newinfo['room_name'] = $roomInfo["roomName"];
+
+      return $newinfo;
+    }
 
     /*
     * ほーむわーくユーザーの新規登録
