@@ -89,17 +89,17 @@ class UsersController extends BaseController
     /*
     * ほーむわーくユーザーの新規登録
     */
-    // public function insertOriginalUser(Request $request)
-    // {
+    public function insertOriginalUser(Request $request)
+    {
         // ユーザ登録
-        // $user = $this->usersService->insertOriginalUser($request, $responce);
+        $user = $this->usersService->insertOriginalUser($request, $responce);
 
         // ユーザトークン登録
-        // $appToken = $this->usersService->insertUserToken($user['user_id'], $request ->request->get("uuid"));
-        // $user['app_token'] = $appToken;
+        $appToken = $this->usersService->insertUserToken($user['user_id'], $request ->request->get("auth_id"));
+        $user['app_token'] = $appToken;
 
-    //     return $this->returnResult($user, $responce);
-    // }
+        return $this->returnResult($user, $responce);
+    }
 
     /*
     * ユーザー更新

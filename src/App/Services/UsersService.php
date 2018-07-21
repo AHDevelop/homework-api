@@ -148,30 +148,30 @@ class UsersService extends BaseService
     /*
     * ほーむわーくユーザーの新規登録
     */
-    // public function insertOriginalUser($Param, &$responce)
-    // {
+    public function insertOriginalUser($Param, &$responce)
+    {
       // ユーザーマスタに登録
-      // $results = $this->registerUserMaster($Param);
+      $results = $this->registerUserMaster($Param);
 
       // 部屋の新規作成
-      // $roomInfo = $this->registerRoom($Param, $results);
+      $roomInfo = $this->registerRoom($Param, $results["userName"], $results);
 
       // 家事マスタをすべて取得
-      // $homeworkMasterList = $this->getAllHomeworkMaster();
+      $homeworkMasterList = $this->getAllHomeworkMaster();
 
       // 部屋家事の登録
-      // $this->registerRoomHomework($Param, $results);
+      $this->registerRoomHomework($Param, $results);
 
       // 登録したユーザ情報を返却するためにSelect
-      // $newinfo = $this->selectNewUser($results["userId"]);
+      $newinfo = $this->selectNewUser($results["userId"]);
 
       // ユーザー情報以外の付帯情報を追加
-      // $newinfo['room_id'] = $roomInfo["roomId"];
-      // $newinfo['room_number'] = $roomInfo["roomNumber"];
-      // $newinfo['room_name'] = $roomInfo["roomName"];
+      $newinfo['room_id'] = $roomInfo["roomId"];
+      $newinfo['room_number'] = $roomInfo["roomNumber"];
+      $newinfo['room_name'] = $roomInfo["roomName"];
 
-    //   return $newinfo;
-    // }
+      return $newinfo;
+    }
 
     /*
     * ユーザーマスタに登録
@@ -217,7 +217,7 @@ class UsersService extends BaseService
     /*
     * 部屋の新規作成
     */
-    private function registerRoom($Param, &$results)
+    private function registerRoom($Param, $userName, &$results)
     {
       // SQLステートメントを用意
       $st = $this->pdo->prepare('
