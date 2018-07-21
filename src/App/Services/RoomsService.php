@@ -216,7 +216,6 @@ class RoomsService extends BaseService
       // Firebaseのダイナミックリンクを作成する
       $invite_url = "https://play.google.com/store/apps/details?id=com.hatakehirodev.homework&roomId=" . $roomId . "&userId=" . $userId . "&param=" . $encryptHash;
 
-      //$url = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=AIzaSyAUVaiMn91rcZfamAR06k5HJGbThU7vOy4';
       $data = [];
       $data["dynamicLinkInfo"] = [];
       $data["dynamicLinkInfo"]["dynamicLinkDomain"] = "homework.page.link";
@@ -235,6 +234,8 @@ class RoomsService extends BaseService
               'ignore_errors' => true
           )
       ));
+
+      $url = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=AIzaSyAUVaiMn91rcZfamAR06k5HJGbThU7vOy4';
       $response = file_get_contents($url, false, $context);
 
       $resObj = json_decode($response, true);

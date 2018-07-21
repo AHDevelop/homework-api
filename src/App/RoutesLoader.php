@@ -47,7 +47,7 @@ class RoutesLoader
         // 部屋設定更新
         $api->put('/room/update.json', "rooms.controller:update");
         // 招待URL取得
-        $api->get('/room/invite/invite_room_id={roomId}/invite_user_id={userId}', "rooms.controller:getInviteUrl");
+        $api->get('/room/invite/invite_room_id={roomId}&invite_user_id={userId}', "rooms.controller:getInviteUrl");
 
         /*
         * ユーザー
