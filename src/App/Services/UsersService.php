@@ -44,21 +44,21 @@ class UsersService extends BaseService
     /**
     * ユーザーを一件取得する（UUIDで取得）
     */
-    // public function getOneByUUID($key, &$responce)
-    // {
-    //   $st = $this->pdo->prepare('SELECT user_id, email, user_name, auth_type, auth_id FROM user_master where auth_type = 3 and auth_id = :authId');
-    //   $st->bindValue(':authId', $key, $this->pdo::PARAM_STR);
-    //   $this->executeSql($st);
-    //
-    //   $results = array();
-    //   while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
-    //     $results[] = $row;
-    //   }
-    //
-    //   $this->monolog->debug($results);
-    //
-    //   return $results;
-    // }
+    public function getOneByUUID($key, &$responce)
+    {
+      $st = $this->pdo->prepare('SELECT user_id, email, user_name, auth_type, auth_id FROM user_master where auth_type = 3 and auth_id = :authId');
+      $st->bindValue(':authId', $key, $this->pdo::PARAM_STR);
+      $this->executeSql($st);
+
+      $results = array();
+      while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+        $results[] = $row;
+      }
+
+      $this->monolog->debug($results);
+
+      return $results;
+    }
 
     /**
     * ユーザー全件を取得する

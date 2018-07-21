@@ -44,17 +44,17 @@ class UsersController extends BaseController
     * UUIDを元にユーザーを取得する
     * 取得できた場合にTokenの更新も合わせて行う
     */
-    // public function getOneByUUID($key)
-    // {
-    //     $result = $this->usersService->getOneByUUID($key, $responce);
-    //
-    //     // UPDATE token
-    //     if(0 < count($result) && $result[0]['user_id'] != undefined){
-    //       $appToken = $this->usersService->updateUserToken($result[0]['user_id'], $key);
-    //       $result[0]['app_token'] = $appToken;
-    //     }
-    //     return $this->returnResult($result, $responce);
-    // }
+    public function getOneByUUID($key)
+    {
+        $result = $this->usersService->getOneByUUID($key, $responce);
+
+        // UPDATE token
+        if(0 < count($result) && $result[0]['user_id'] != undefined){
+          $appToken = $this->usersService->updateUserToken($result[0]['user_id'], $key);
+          $result[0]['app_token'] = $appToken;
+        }
+        return $this->returnResult($result, $responce);
+    }
 
     public function getAll()
     {
