@@ -188,26 +188,26 @@ class RoomsService extends BaseService
     */
     public function getInviteUrl($roomId, $userId, &$responce){
 
-      // TODO　招待情報をDBに登録する
+      // 招待情報をDBに登録する
       // SQLステートメントを用意
-      // $st = $this->pdo->prepare('
-      //   INSERT INTO user_master
-      //     (room_id, user_id, invite_date, is_deleted, created_by, created_at, updated_by, updated_at)
-      //   VALUES
-      //     (:roomId, :userId, now(), false, :updateUserId, now(), :updateUserId, now());
-      // ');
-      //
-      // // 変数をバインド
-      // $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
-      // $st->bindParam(':userId', $userId, $this->pdo::PARAM_STR);
-      // $st->bindParam(':updateUserId', $userId, $this->pdo::PARAM_STR);
-      //
-      // $this->executeSql($st);
-      //
-      // $results = array();
-      // while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
-      //   $results[] = $row;
-      // }
+      $st = $this->pdo->prepare('
+        INSERT INTO invite_hist
+          (room_id, user_id, invite_date, is_deleted, created_by, created_at, updated_by, updated_at)
+        VALUES
+          (:roomId, :userId, now(), false, :updateUserId, now(), :updateUserId, now());
+      ');
+
+      // 変数をバインド
+      $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+      $st->bindParam(':userId', $userId, $this->pdo::PARAM_STR);
+      $st->bindParam(':updateUserId', $userId, $this->pdo::PARAM_STR);
+
+      $this->executeSql($st);
+
+      $results = array();
+      while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+        $results[] = $row;
+      }
 
       // 招待SQLを生成する
       // "room_id" + "_" + "room_idと文字列{エンジョイほーむわーく}を結合した文字列のSHA512ハッシュ値"
@@ -216,11 +216,11 @@ class RoomsService extends BaseService
       // Firebaseのダイナミックリンクを作成する
       $invite_url = "https://play.google.com/store/apps/details?id=com.hatakehirodev.homework&roomId=" . $roomId . "&userId=" . $userId . "&param=" . $encryptHash;
 
-      $url = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=AIzaSyAUVaiMn91rcZfamAR06k5HJGbThU7vOy4';
+      //$url = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=AIzaSyAUVaiMn91rcZfamAR06k5HJGbThU7vOy4';
       $data = [];
       $data["dynamicLinkInfo"] = [];
       $data["dynamicLinkInfo"]["dynamicLinkDomain"] = "homework.page.link";
-      $data["dynamicLinkInfo"]["link"] = $invite_url;//"https://play.google.com/store/apps/details?id=com.hatakehirodev.homework&invite_room_id=1";
+      $data["dynamicLinkInfo"]["link"] = $invite_url;
       $data["dynamicLinkInfo"]["androidInfo"] = [];
       $data["dynamicLinkInfo"]["androidInfo"]["androidPackageName"] = "com.hatakehirodev.homework";
 
