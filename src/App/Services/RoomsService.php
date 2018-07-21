@@ -182,4 +182,65 @@ class RoomsService extends BaseService
 
       return $results;
     }
+
+    /*
+    * 招待URL取得
+    */
+    public function getInviteUrl($roomId, $userId, &$responce){
+
+      // 招待情報をDBに登録する
+      // SQLステートメントを用意
+      $st = $this->pdo->prepare('
+        INSERT INTO invite_hist
+          (room_id, user_id, invite_date, is_deleted, created_by, created_at, updated_by, updated_at)
+        VALUES
+          (:roomId, :userId, now(), false, :updateUserId, now(), :updateUserId, now());
+      ');
+
+      // 変数をバインド
+      $st->bindParam(':roomId', $roomId, $this->pdo::PARAM_INT);
+      $st->bindParam(':userId', $userId, $this->pdo::PARAM_STR);
+      $st->bindParam(':updateUserId', $userId, $this->pdo::PARAM_STR);
+
+      $this->executeSql($st);
+
+      $results = array();
+      while ($row = $st->fetch($this->pdo::FETCH_ASSOC)) {
+        $results[] = $row;
+      }
+
+      // 招待SQLを生成する
+      // "room_id" + "_" + "room_idと文字列{エンジョイほーむわーく}を結合した文字列のSHA512ハッシュ値"
+      $encryptHash = hash(sha512, $roomId . $userId . "エンジョイほーむわーく");
+
+      // Firebaseのダイナミックリンクを作成する
+      $invite_url = "https://play.google.com/store/apps/details?id=com.hatakehirodev.homework&roomId=" . $roomId . "&userId=" . $userId . "&param=" . $encryptHash;
+
+      //$url = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=AIzaSyAUVaiMn91rcZfamAR06k5HJGbThU7vOy4';
+      $data = [];
+      $data["dynamicLinkInfo"] = [];
+      $data["dynamicLinkInfo"]["dynamicLinkDomain"] = "homework.page.link";
+      $data["dynamicLinkInfo"]["link"] = $invite_url;
+      $data["dynamicLinkInfo"]["androidInfo"] = [];
+      $data["dynamicLinkInfo"]["androidInfo"]["androidPackageName"] = "com.hatakehirodev.homework";
+
+      $header = [
+          'Content-Type: application/json',
+      ];
+      $context = stream_context_create(array(
+          'http' => array(
+              'method' => 'POST',
+              'header' => implode(PHP_EOL,$header),
+              'content'=>  json_encode($data),
+              'ignore_errors' => true
+          )
+      ));
+      $response = file_get_contents($url, false, $context);
+
+      $resObj = json_decode($response, true);
+      $results[invite_url] = $resObj["shortLink"];
+
+      // 招待URLを返却する
+      return $results;
+    }
 }

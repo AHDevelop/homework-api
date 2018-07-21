@@ -17,6 +17,12 @@ date_default_timezone_set('Asia/Tokyo');
 
 // ログ設定
 $app->register(new MonologServiceProvider(), $MONOLOG_SETTING);
+// ローカル環境用
+// $app->register(new MonologServiceProvider(), array(
+// 	"monolog.logfile" => ROOT_PATH . "/storage/logs/" . Carbon::now('Asia/Tokyo')->format("Y-m-d") . ".log",
+//   "monolog.level" => "DEBUG",
+//   "monolog.name" => "application"
+// ));
 
 // Heroku DBへの参照
 $app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider('pdo'), $DB_CONN);
