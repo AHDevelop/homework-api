@@ -42,7 +42,7 @@ class UsersService extends BaseService
     }
 
     /**
-    * ユーザーを一件取得する（UUIDで取得）
+    * ユーザーを一件取得する（Serialで取得）
     */
     public function getOneByUUID($key, &$responce)
     {
@@ -130,13 +130,13 @@ class UsersService extends BaseService
       $results = $this->registerUserMaster($Param);
 
       // 部屋の新規作成
-      $roomInfo = $this->registerRoom($Param, $results["userName"], $results);
+      $roomInfo = $this->registerRoom($Param, $results["userId"], $results["userName"], $results);
 
       // 家事マスタをすべて取得
       $homeworkMasterList = $this->getAllHomeworkMaster();
 
       // 部屋家事の登録
-      $this->registerRoomHomework($Param, $results);
+      $this->registerRoomHomework($Param, $roomInfo["roomId"], $homeworkMasterList, $results);
 
       // 登録したユーザ情報を返却するためにSelect
       $newinfo = $this->selectNewUser($results["userId"]);
@@ -158,13 +158,13 @@ class UsersService extends BaseService
       $results = $this->registerUserMaster($Param);
 
       // 部屋の新規作成
-      $roomInfo = $this->registerRoom($Param, $results["userName"], $results);
+      $roomInfo = $this->registerRoom($Param, $results["userId"], $results["userName"], $results);
 
       // 家事マスタをすべて取得
       $homeworkMasterList = $this->getAllHomeworkMaster();
 
       // 部屋家事の登録
-      $this->registerRoomHomework($Param, $results);
+      $this->registerRoomHomework($Param, $roomInfo["roomId"], $homeworkMasterList, $results);
 
       // 登録したユーザ情報を返却するためにSelect
       $newinfo = $this->selectNewUser($results["userId"]);
@@ -221,7 +221,7 @@ class UsersService extends BaseService
     /*
     * 部屋の新規作成
     */
-    private function registerRoom($Param, $userName, &$results)
+    private function registerRoom($Param, $userId, $userName, &$results)
     {
       // SQLステートメントを用意
       $st = $this->pdo->prepare('
@@ -257,7 +257,7 @@ class UsersService extends BaseService
     /*
     * 部屋家事の登録
     */
-    private function registerRoomHomework($Param, &$results)
+    private function registerRoomHomework($Param, $roomId, $homeworkMasterList, &$results)
     {
       // SQLステートメントを用意
       $st = $this->pdo->prepare('
@@ -638,6 +638,7 @@ class UsersService extends BaseService
       $inviteFromUserId = $Param->request->get("invite_from_user_id");
       $inviteToUserId = $Param->request->get("invite_to_user_id");
       $inviteRoomId = $Param->request->get("invite_room_id");
+      $inviteParam = $Param->request->get("invite_param");
 
       // 招待情報のチェック 一か月以内の招待情報を検索して対象をチェックする
       $st = $this->pdo->prepare("SELECT count(*) FROM invite_hist where room_id = :roomId and user_id = :userId and invite_date < current_timestamp + '+30 days'");
@@ -661,7 +662,12 @@ class UsersService extends BaseService
         return;
       }
 
-      // TODO:SHA512パラメータでチェックする
+      // SHA512パラメータでチェックする
+      $encryptHash = hash(sha512, $inviteRoomId . $inviteFromUserId . "エンジョイほーむわーく");
+      if($inviteParam !== $encryptHash){
+        $responce["message"] = "招待情報が有効期間を過ぎています。再度招待情報を送ってもらってください。";
+        return;
+      }
 
       // 部屋に追加
       $st2 = $this->pdo->prepare('
