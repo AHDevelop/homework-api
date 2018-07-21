@@ -28,6 +28,7 @@ class UsersController extends BaseController
     */
     public function getOneByKey($key, $authToken)
     {
+
         $result = $this->usersService->getOneByKey($key, $responce);
 
         // UPDATE token
@@ -38,6 +39,22 @@ class UsersController extends BaseController
 
         return $this->returnResult($result, $responce);
     }
+
+    /*
+    * UUIDを元にユーザーを取得する
+    * 取得できた場合にTokenの更新も合わせて行う
+    */
+    // public function getOneByUUID($key)
+    // {
+    //     $result = $this->usersService->getOneByUUID($key, $responce);
+    //
+    //     // UPDATE token
+    //     if(0 < count($result) && $result[0]['user_id'] != undefined){
+    //       $appToken = $this->usersService->updateUserToken($result[0]['user_id'], $key);
+    //       $result[0]['app_token'] = $appToken;
+    //     }
+    //     return $this->returnResult($result, $responce);
+    // }
 
     public function getAll()
     {
@@ -70,6 +87,21 @@ class UsersController extends BaseController
     }
 
     /*
+    * ほーむわーくユーザーの新規登録
+    */
+    // public function insertOriginalUser(Request $request)
+    // {
+        // ユーザ登録
+        // $user = $this->usersService->insertOriginalUser($request, $responce);
+
+        // ユーザトークン登録
+        // $appToken = $this->usersService->insertUserToken($user['user_id'], $request ->request->get("uuid"));
+        // $user['app_token'] = $appToken;
+
+    //     return $this->returnResult($user, $responce);
+    // }
+
+    /*
     * ユーザー更新
     */
     public function updateUser(Request $request)
@@ -86,6 +118,15 @@ class UsersController extends BaseController
         $result = $this->usersService->insertUserWithRoom($request, $responce);
         return $this->returnResult($result, $responce);
     }
+
+    // /*
+    // * 招待_部屋ユーザー追加
+    // */
+    // public function insertUserWithInviteRoom(Request $request)
+    // {
+    //     $result = $this->usersService->insertUserWithInviteRoom($request, $responce);
+    //     return $this->returnResult($result, $responce);
+    // }
 
     /*
     * 部屋ユーザー削除

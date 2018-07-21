@@ -54,10 +54,14 @@ class RoutesLoader
         */
         // key(gmailでuser_masterをチェックし、存在確認する)
         $api->get('/users/key={key}&authToken={authToken}', "users.controller:getOneByKey");
+        // UUIDをkeyとしてユーザーを検索する
+        $api->get('/users/key={key}', "users.controller:getOneByUUID");
         // IDでユーザーを取得
         $api->get('/users/user_id={id}', "users.controller:getOne");
-        // 新規ユーザー登録
+        // 新規ユーザー登録(Google認証)
         $api->post('/users/update.json', "users.controller:insertUser");
+        // ほーむわーくユーザーの新規登録
+        $api->post('/users/original/update.json', "users.controller:insertOriginalUser");
         // ユーザー更新
         $api->put('/users/update.json', "users.controller:updateUser");
 
@@ -65,6 +69,8 @@ class RoutesLoader
         $api->get('/users/room_id={roomId}', "users.controller:getAllWithRoom");
         // 部屋ユーザー追加
         $api->post('/room/users/update.json', "users.controller:insertUserWithRoom");
+        // 招待ユーザーの部屋への追加処理
+        // $api->post('/room/users/invite/update.json', "users.controller:insertUserWithInviteRoom");
         // 部屋ユーザー削除
         $api->delete('/room/users/update.json', "users.controller:deleteUserWithRoom");
 

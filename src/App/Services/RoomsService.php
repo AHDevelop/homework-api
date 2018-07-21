@@ -220,7 +220,7 @@ class RoomsService extends BaseService
       $data = [];
       $data["dynamicLinkInfo"] = [];
       $data["dynamicLinkInfo"]["dynamicLinkDomain"] = "homework.page.link";
-      $data["dynamicLinkInfo"]["link"] = $invite_url;　//"https://play.google.com/store/apps/details?id=com.hatakehirodev.homework&invite_room_id=1";
+      $data["dynamicLinkInfo"]["link"] = $invite_url;//"https://play.google.com/store/apps/details?id=com.hatakehirodev.homework&invite_room_id=1";
       $data["dynamicLinkInfo"]["androidInfo"] = [];
       $data["dynamicLinkInfo"]["androidInfo"]["androidPackageName"] = "com.hatakehirodev.homework";
 
