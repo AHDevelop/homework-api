@@ -48,6 +48,14 @@ $app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider
 				$log->addInfo('new users no check');
 				return;
 			}
+			$log->addInfo($apiPaths[1]);
+
+			// 独自ユーザ登録時は認証チェックしない（そもそもtokenは登録されていないため）
+			if ($request->getMethod() == 'POST' && $apiPaths[1] == "original" && $apiPaths[2] == 'update.json') {
+				$log->addInfo('new users no check');
+				return;
+			}
+
 			// google再認証後、ユーザチェック時（gmailによるユーザ確認）はチェックしない（tokenを自動的に更新する仕組みのため）
 			$log->addInfo('key'.$request->headers->get('key'));
 			if ($request->getMethod() == 'GET' && $request->headers->get('key') != null && $request->headers->get('authToken') != null) {
