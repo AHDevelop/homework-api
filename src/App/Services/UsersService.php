@@ -641,7 +641,7 @@ class UsersService extends BaseService
       $inviteParam = $Param->request->get("invite_param");
 
       // 招待情報のチェック 一か月以内の招待情報を検索して対象をチェックする
-      $st = $this->pdo->prepare("SELECT count(*) FROM invite_hist where room_id = :roomId and user_id = :userId and invite_date < current_timestamp + '+30 days'");
+      $st = $this->pdo->prepare("SELECT count(*) FROM invite_hist where room_id = :roomId and user_id = :userId and invite_date >= current_timestamp + '-30 days'");
 
       // 変数をバインド
       $st->bindParam(':roomId', $inviteRoomId, $this->pdo::PARAM_INT);
