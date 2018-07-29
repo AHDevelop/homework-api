@@ -17,12 +17,18 @@ date_default_timezone_set('Asia/Tokyo');
 
 // ログ設定
 $app->register(new MonologServiceProvider(), $MONOLOG_SETTING);
+// ローカル環境用
+// $app->register(new MonologServiceProvider(), array(
+// 	"monolog.logfile" => ROOT_PATH . "/storage/logs/" . Carbon::now('Asia/Tokyo')->format("Y-m-d") . ".log",
+//   "monolog.level" => "DEBUG",
+//   "monolog.name" => "application"
+// ));
 
 // Heroku DBへの参照
 $app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider('pdo'), $DB_CONN);
 
 // check auth token
-if ($MODE !== 'debug') {
+// if ($MODE !== 'debug') {
 	$app->before(function (Request $request, Application $app) {
 
 		$log = $app['monolog'];
@@ -42,6 +48,14 @@ if ($MODE !== 'debug') {
 				$log->addInfo('new users no check');
 				return;
 			}
+			$log->addInfo($apiPaths[1]);
+
+			// 独自ユーザ登録時は認証チェックしない（そもそもtokenは登録されていないため）
+			if ($request->getMethod() == 'POST' && $apiPaths[1] == "original" && $apiPaths[2] == 'update.json') {
+				$log->addInfo('new users no check');
+				return;
+			}
+
 			// google再認証後、ユーザチェック時（gmailによるユーザ確認）はチェックしない（tokenを自動的に更新する仕組みのため）
 			$log->addInfo('key'.$request->headers->get('key'));
 			if ($request->getMethod() == 'GET' && $request->headers->get('key') != null && $request->headers->get('authToken') != null) {
@@ -63,7 +77,7 @@ if ($MODE !== 'debug') {
 			$app->abort(401, "auth token error");
 		}
 	}, 100);
-}
+// }
 
 //accepting JSON
 $app->before(function (Request $request) {

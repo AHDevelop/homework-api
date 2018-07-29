@@ -35,6 +35,15 @@ class RoomsController extends BaseController
     }
 
     /*
+    * 招待URL取得
+    */
+    public function getInviteUrl($roomId, $userId)
+    {
+        $result = $this->$roomsService->getInviteUrl($roomId, $userId, $responce);
+        return $this->returnResult($result, $responce);
+    }
+
+    /*
     * 部屋設定更新
     */
     public function update(Request $request)
