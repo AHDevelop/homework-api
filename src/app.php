@@ -28,7 +28,7 @@ $app->register(new MonologServiceProvider(), $MONOLOG_SETTING);
 $app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider('pdo'), $DB_CONN);
 
 // check auth token
-// if ($MODE !== 'debug') {
+if ($MODE !== 'debug') {
 	$app->before(function (Request $request, Application $app) {
 
 		$log = $app['monolog'];
@@ -77,7 +77,7 @@ $app->register(new Csanquer\Silex\PdoServiceProvider\Provider\PDOServiceProvider
 			$app->abort(401, "auth token error");
 		}
 	}, 100);
-// }
+}
 
 //accepting JSON
 $app->before(function (Request $request) {
